@@ -1,6 +1,6 @@
 import GuestLayout from '@/layouts/guest-layout';
 
-export default function Blog(){
+export default function Index(){
     return (
         <>
         <GuestLayout>

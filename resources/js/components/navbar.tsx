@@ -60,7 +60,7 @@ interface Navbar1Props {
 const Navbar = ({
                      logo = {
                          url: "/",
-                         src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+                         src: "/images/kernellab-logo.png",
                          alt: "logo",
                          title: "Kernellab",
                      },
@@ -87,7 +87,7 @@ const Navbar = ({
                         <a href={logo.url} className="flex items-center gap-2">
                             <img
                                 src={logo.src}
-                                className="max-h-8 dark:invert"
+                                className="max-h-10 dark:invert"
                                 alt={logo.alt}
                             />
                             <span className="text-lg font-semibold tracking-tighter">
