@@ -122,6 +122,7 @@ export default function Create() {
                                                 <FormItem>
                                                     <FormControl>
                                                         <div className="min-h-[400px] rounded-md border">
+                                                            {/*@ts-ignore*/}
                                                             <MarkdownEditor field={field}/>
                                                         </div>
                                                     </FormControl>

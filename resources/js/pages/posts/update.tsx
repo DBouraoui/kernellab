@@ -23,6 +23,10 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import MarkdownEditor from '@/pages/posts/markdown-editor'
+import { router } from '@inertiajs/react';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { Check, Loader } from 'lucide-react';
 
 const schema = z.object({
     title: z.string().min(2, "Le titre est trop court"),
@@ -31,6 +35,8 @@ const schema = z.object({
 })
 
 export default function UpdatePost({ post }: { post: Post }) {
+
+    const [isLoading, setIsLoading] = useState(false)
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -41,7 +47,22 @@ export default function UpdatePost({ post }: { post: Post }) {
     })
 
     function onSubmit(values: z.infer<typeof schema>) {
-        console.log(values)
+        setIsLoading(true)
+
+        router.patch(`/dashboard/post/${post.id}`,
+            values,
+            {
+                onSuccess: () => {
+                    toast.success("L'article a été modifié avec succès")
+                },
+                onError: () => {
+                    toast.error("Une erreur est survenue")
+                },
+                onFinish: () => {
+                    setIsLoading(false)
+                },
+            }
+        )
     }
 
     return (
@@ -61,7 +82,7 @@ export default function UpdatePost({ post }: { post: Post }) {
                 </DialogHeader>
 
                 {/* ZONE SCROLLABLE */}
-                <div className="overflow-y-auto pr-2 max-h-[90vh]">
+                <div className="overflow-y-auto pr-2 max-h-[70vh]">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <FormField
@@ -119,7 +140,21 @@ export default function UpdatePost({ post }: { post: Post }) {
                                 <DialogClose asChild>
                                     <Button variant="outline">Annuler</Button>
                                 </DialogClose>
-                                <Button type="submit">Valider</Button>
+                                <Button type="submit">
+                                    {isLoading ? (
+                                        <>
+                                            <Loader className="animate-spin" />
+                                            En cour de modification
+                                        </>
+                                        ):
+                                        (
+                                        <>
+                                            <Check className="text-green-500" />
+                                            Valider
+                                        </>
+                                        )
+                                    }
+                                </Button>
                             </DialogFooter>
                         </form>
                     </Form>

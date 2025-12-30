@@ -41,6 +41,22 @@ class PostController extends Controller
             ->route('post.list')
             ->with('success', 'Article supprimé avec succès');
     }
+
+    public function update(Request $request, int $id)
+    {
+        $post = Post::findOrFail($id);
+
+        $post->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'content' => $request->content,
+        ]);
+
+        return redirect()
+            ->route('post.list')
+            ->with('success', 'Article modifié avec succès');
+    }
+
     public function store(Request $request) {
         $validated = $request->validate([
             'title' => ['required', 'string', 'min:2', 'max:255'],
