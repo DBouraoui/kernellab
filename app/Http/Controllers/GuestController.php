@@ -13,4 +13,12 @@ class GuestController extends Controller
     public function blog() {
         return Inertia::render('blog/index');
     }
+
+    public function contact() {
+        return Inertia::render('contact/index');
+    }
+
+    public function about() {
+        return Inertia::render('about/index');
+    }
 }

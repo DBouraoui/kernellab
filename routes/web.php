@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [GuestController::class, 'home'])->name('home');
 Route::get('/blog', [GuestController::class, 'blog'])->name('blog');
+Route::get('/contact', [GuestController::class, 'contact'])->name('contact');
+Route::get('/about', [GuestController::class, 'about'])->name('about');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

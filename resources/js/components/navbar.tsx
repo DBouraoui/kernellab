@@ -1,4 +1,4 @@
-import { LucideLogIn, Menu} from "lucide-react";
+import { FolderGit, Globe, Layers, LucideLogIn, Menu } from 'lucide-react';
 
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { blog, home } from '@/routes';
+import { about, blog, contact, home } from '@/routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 interface MenuItem {
@@ -60,7 +60,7 @@ interface Navbar1Props {
 const Navbar = ({
                      logo = {
                          url: "/",
-                         src: "/images/kernellab-logo.png",
+                         src: "/images/kernellab-logo.webp",
                          alt: "logo",
                          title: "Kernellab",
                      },
@@ -69,6 +69,41 @@ const Navbar = ({
                          {
                              title: "Blog",
                              url: blog().url,
+                         },
+                         {
+                             title: "Projets",
+                             url: "#",
+                             items: [
+                                 {
+                                     title: "Écosystème Open Source",
+                                     description: "Exploration de mes contributions, librairies Go/PHP et outils DevOps.",
+                                     // FolderGit2 évoque directement le dépôt de code
+                                     icon: <FolderGit className="size-5 shrink-0 text-orange-500" />,
+                                     url: "/projets/open-source",
+                                 },
+                                 {
+                                     title: "Projets Clients & WebApps",
+                                     description: "Plateformes sur mesure et architectures robustes pour le web.",
+                                     // Globe évoque le déploiement mondial / web
+                                     icon: <Globe className="size-5 shrink-0 text-blue-500" />,
+                                     url: "/projets/clients",
+                                 },
+                                 {
+                                     title: "Produits SaaS & Micro-services",
+                                     description: "Solutions logicielles complètes conçues pour la scalabilité.",
+                                     // Rocket ou Layers évoquent le produit fini et l'empilement technique
+                                     icon: <Layers className="size-5 shrink-0 text-emerald-500" />,
+                                     url: "/projets/saas",
+                                 },
+                             ]
+                         },
+                         {
+                             title: "Contact",
+                             url: contact().url,
+                         },
+                         {
+                             title: "A propos",
+                             url: about().url,
                          },
                      ],
                      auth = {

@@ -37,7 +37,7 @@ export function Articles() {
     ]
 
     return (
-        <section className="py-24 bg-muted/10 relative overflow-hidden">
+        <section className="py-24 relative overflow-hidden">
             {/* Léger halo de couleur en fond pour l'ambiance */}
             <div className="absolute top-1/2 left-0 -translate-y-1/2 h-[400px] w-[400px] bg-blue-500/5 blur-[120px] rounded-full -z-10"></div>
             <div className="absolute bottom-1/4 right-0 h-[300px] w-[300px] bg-orange-500/5 blur-[100px] rounded-full -z-10"></div>

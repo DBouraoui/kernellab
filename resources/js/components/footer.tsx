@@ -11,7 +11,11 @@ export function Footer() {
                     {/* --- BRANDING --- */}
                     <div className="flex flex-col items-center md:items-start gap-2">
                         <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                            <Mountain className="h-6 w-6 text-primary" />
+                            <img
+                                src="/images/kernellab-logo.webp"
+                                className="max-h-14 dark:invert"
+                                alt="kernellab-logo"
+                            />
                             <span>KernelLab.</span>
                         </a>
                         <p className="text-sm text-muted-foreground max-w-xs text-center md:text-left">
