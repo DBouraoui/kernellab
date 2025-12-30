@@ -16,8 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('dashboard/add-post', [PostController::class, 'index'])->name('dashboard.add-post');
-    Route::post('dashboard/store', [PostController::class, 'store'])->name('dashboard.store-post');
+    Route::get('/dashboard/post/view', [PostController::class, 'list'])->name('post.list');
+    Route::get('/dashboard/post/add', [PostController::class, 'create'])->name('post.create');
+    Route::post('/dashboard/store', [PostController::class, 'store'])->name('post.store');
     Route::post('/dashboard/upload-images', [PostController::class, 'uploadImages']);
     Route::post('/dashboard/delete-image', [PostController::class, 'deleteImage']);
 });

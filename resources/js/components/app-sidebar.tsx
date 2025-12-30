@@ -10,10 +10,16 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import {  dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, StickyNote } from 'lucide-react';
+import {
+    BookOpen,
+    EyeIcon,
+    Folder,
+    LayoutGrid,
+    StickyNote,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -23,10 +29,16 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Ajouter un post',
-        href: 'dashboard/add-post',
+        title: 'Créer un article',
+        href: '/dashboard/post/add',
         icon: StickyNote,
     },
+    {
+        title: 'Voir les articles',
+        href: '/dashboard/post/view',
+        icon: EyeIcon,
+    }
+
 ];
 
 const footerNavItems: NavItem[] = [

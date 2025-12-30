@@ -10,8 +10,15 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function index() {
-        return Inertia::render('dashboard/add-post');
+    public function create() {
+        return Inertia::render('posts/create');
+    }
+    public function list()
+    {
+        // Utiliser orderBy au lieu de sortByDesc pour meilleures performances
+        $posts = Post::orderBy('created_at', 'desc')->get();
+
+        return Inertia::render('posts/list', compact('posts'));
     }
 
     public function store(Request $request) {

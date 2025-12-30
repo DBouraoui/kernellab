@@ -9,10 +9,10 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import TagsSelector from '@/pages/dashboard/tags-selector';
+import TagsSelector from '@/pages/posts/tags-selector';
 import { toast } from 'sonner';
-import MarkdownEditor from '@/pages/dashboard/markdown-editor';
-import PictureUploader from '@/pages/dashboard/Picture-uploader';
+import MarkdownEditor from '@/pages/posts/markdown-editor';
+import PictureUploader from '@/pages/posts/Picture-uploader';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Send } from "lucide-react";
@@ -25,7 +25,7 @@ const schema = z.object({
     image: z.array(z.string()).min(1, "Une image de couverture est requise"),
 })
 
-export default function AddPost() {
+export default function Create() {
     const [isLoading, setIsLoading] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -182,7 +182,7 @@ export default function AddPost() {
                                 {/* Actions */}
                                 <Card className="bg-muted/50">
                                     <CardContent className="pt-6">
-                                        <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                                        <Button type="submit" className="w-full cursor-pointer" size="lg" disabled={isLoading}>
                                             {isLoading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
