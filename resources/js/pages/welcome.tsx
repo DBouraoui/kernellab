@@ -1,11 +1,12 @@
-import Navbar from '@/components/navbar';
+import GuestLayout from '@/layouts/guest-layout';
 
 export default function Welcome() {
 
     return (
         <>
-            <Navbar />
-
+           <GuestLayout>
+                <p>Home</p>
+           </GuestLayout>
         </>
     );
 }

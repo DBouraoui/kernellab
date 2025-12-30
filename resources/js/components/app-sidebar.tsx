@@ -21,6 +21,7 @@ import {
     StickyNote,
 } from 'lucide-react';
 import AppLogo from './app-logo';
+import post from '@/routes/post';
 
 const mainNavItems: NavItem[] = [
     {
@@ -30,12 +31,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Créer un article',
-        href: '/dashboard/post/add',
+        href: post.create(),
         icon: StickyNote,
     },
     {
         title: 'Voir les articles',
-        href: '/dashboard/post/view',
+        href: post.list(),
         icon: EyeIcon,
     }
 

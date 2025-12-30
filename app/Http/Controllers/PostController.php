@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -42,6 +43,11 @@ class PostController extends Controller
             ->with('success', 'Article supprimé avec succès');
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return RedirectResponse
+     */
     public function update(Request $request, int $id)
     {
         $post = Post::findOrFail($id);
