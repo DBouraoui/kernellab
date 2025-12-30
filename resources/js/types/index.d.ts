@@ -54,3 +54,14 @@ export interface Post {
     created_at: string;
     updated_at: string;
 }
+
+export interface Contact {
+    id: number;
+    name: string;
+    email: string;
+    phone?: string;
+    reason: string;
+    message: string;
+    created_at: string;
+    updated_at: string;
+}
