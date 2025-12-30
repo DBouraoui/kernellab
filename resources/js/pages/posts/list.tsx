@@ -30,6 +30,7 @@ import {
     CarouselPrevious,
 } from '@/components/ui/carousel';
 import { toast } from 'sonner';
+import UpdatePost from '@/pages/posts/update';
 
 export default function List({ posts }: { posts: Post[] }) {
     const breadcrumbs: BreadcrumbItem[] = [
@@ -478,15 +479,7 @@ export default function List({ posts }: { posts: Post[] }) {
                                     </CardContent>
 
                                     <CardFooter className="flex gap-2 bg-muted/50 p-4">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="flex-1 hover:bg-primary hover:text-primary-foreground transition-colors"
-                                            onClick={() => ()=>openPopinUpdate(item)}
-                                        >
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Modifier
-                                        </Button>
+                                        <UpdatePost post={item} />
                                         <Button
                                             variant="destructive"
                                             size="sm"

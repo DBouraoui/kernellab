@@ -38,8 +38,8 @@ interface MarkdownEditorProps {
         title: string;
         description: string;
         content: string;
-        tags: string[];
-        image: string[];
+        tags?: string[];
+        image?: string[];
     }, 'content'>;
 }
 
