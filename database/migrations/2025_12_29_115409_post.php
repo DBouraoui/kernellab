@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('content');
             $table->json('image')->nullable();
             $table->json('tags');
+            $table->string('thumbnail')->nullable();
             $table->string('reading_time')->default("10");
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->foreignId('user_id')->constrained();

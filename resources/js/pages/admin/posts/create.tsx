@@ -15,9 +15,18 @@ import 'highlight.js/styles/atom-one-dark.css';
 import PictureUploader from '@/pages/admin/posts/Picture-uploader';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Send, Clock, Eye, Settings2, Sparkles } from "lucide-react";
+import {
+    Loader2,
+    Send,
+    Clock,
+    Eye,
+    Settings2,
+    Sparkles,
+    ImageIcon,
+} from 'lucide-react';
 import MarkdownEditor from '@/pages/admin/posts/markdown-editor';
 import { ArticleSchema } from '@/types/zod-schemas';
+import ThumbnailUploader from '@/pages/admin/posts/thumbnail-uploader';
 
 export default function Create() {
     const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +46,8 @@ export default function Create() {
             tags: [],
             image: [],
             status: "draft",
-            reading_time: ""
+            reading_time: "",
+            thumbnail: ""
         },
     })
 
@@ -199,11 +209,37 @@ export default function Create() {
                                         </CardContent>
                                     </Card>
 
-                                    {/* Média */}
+                                    {/* Thumbnail / Image de couverture */}
                                     <Card className="border-none bg-muted/30 shadow-none">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="text-sm font-bold flex items-center gap-2">
-                                                <Eye className="h-4 w-4" /> Couverture
+                                                <ImageIcon className="h-4 w-4 text-blue-500" /> Image de couverture
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <FormField
+                                                control={form.control}
+                                                name="thumbnail" // Assure-toi que c'est "thumbnail" dans ton schéma Zod
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ThumbnailUploader
+                                                                value={field.value}
+                                                                onChange={field.onChange}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* Galerie d'illustration (images d'article) */}
+                                    <Card className="border-none bg-muted/30 shadow-none">
+                                        <CardHeader className="pb-3">
+                                            <CardTitle className="text-sm font-bold flex items-center gap-2">
+                                                <Eye className="h-4 w-4" /> Images de l'article
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>

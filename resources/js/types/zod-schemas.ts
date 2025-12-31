@@ -16,4 +16,5 @@ export const ArticleSchema = z.object({
     image: z.array(z.string()).min(1, "Une image de couverture est requise"),
     status: z.string().min(2, "Le status est requise"),
     reading_time: z.string().min(1, "Le reading time est requise"),
+    thumbnail: z.string().min(1, "Le thumbnail est requise"),
 })

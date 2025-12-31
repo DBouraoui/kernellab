@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -9,11 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-class PostController extends Controller
+class AdminPostController extends Controller
 {
-    public function create() {
-        return Inertia::render('admin/posts/create');
-    }
     public function list()
     {
         $posts = Post::orderBy('created_at', 'desc')->get();
@@ -21,6 +19,10 @@ class PostController extends Controller
         return Inertia::render('admin/posts/list', compact('posts'));
     }
 
+    public function create()
+    {
+        return Inertia::render('admin/posts/create');
+    }
 
     public function delete(int $id)
     {
@@ -117,6 +119,39 @@ class PostController extends Controller
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
             return response()->json(['message' => 'Fichier supprimé']);
+        }
+
+        return response()->json(['message' => 'Fichier introuvable'], 404);
+    }
+
+    public function uploadThumbnail(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:3072'
+        ]);
+
+        if ($request->hasFile('image')) {
+            // On stocke dans un dossier spécifique pour les couvertures
+            $path = $request->file('image')->store('posts/thumbnails', 'public');
+            $url = Storage::url($path);
+
+            return response()->json(['url' => $url]);
+        }
+
+        return response()->json(['error' => 'No image provided'], 400);
+    }
+
+    public function deleteThumbnail(Request $request)
+    {
+        $url = $request->url;
+
+        // On extrait le chemin après '/storage/'
+        // Exemple: /storage/thumbnails/abc.jpg -> thumbnails/abc.jpg
+        $path = Str::after($url, '/storage/');
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['message' => 'Thumbnail supprimé du serveur']);
         }
 
         return response()->json(['message' => 'Fichier introuvable'], 404);
