@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\admin\AdminProjectController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GuestController;
@@ -34,8 +35,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::patch('/post/{id}', 'update')->name('admin.post.update');
             Route::post('/store', 'store')->name('admin.post.store');
             Route::delete('/post/{id}', 'delete')->name('admin.post.delete');
-
-            // Routes utilitaires (sans name spécifique dans ton code d'origine)
             Route::post('/upload-images', 'uploadImages');
             Route::post('/delete-image', 'deleteImage');
         });
@@ -43,6 +42,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(AdminContactController::class)->group(function () {
             Route::get('/contact', 'index')->name('admin.contact');
             Route::delete('/contact/{id}', 'destroy')->name('admin.contact.delete');
+        });
+
+        Route::controller(AdminProjectController::class)->group(function () {
+           Route::get('/project', 'index')->name('admin.project.index');
+            Route::get('/project/add', 'create')->name('admin.project.create');
+            Route::post('/project', 'store')->name('admin.project.store');
         });
     });
 });

@@ -18,6 +18,7 @@ import {
     ContactIcon,
     EyeIcon,
     Folder,
+    GitForkIcon,
     LayoutGrid,
     StickyNote,
 } from 'lucide-react';
@@ -42,8 +43,13 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Mes contacts',
-        href: admin.contact().url,
+        href: admin.contact(),
         icon: ContactIcon,
+    },
+    {
+        title: 'Mes projets',
+        href: admin.project.index(),
+        icon: GitForkIcon,
     }
 
 ];

@@ -65,3 +65,18 @@ export interface ContactType {
     created_at: string;
     updated_at: string;
 }
+
+export interface ProjectType {
+    id: number;
+    title: string;
+    slug: string; // Pour l'URL SEO
+    category: 'devops' | 'cloud' | 'web' | 'mobile' | 'opensource' | 'saas';
+    status: 'draft' | 'published' | 'archived';
+    stack: string[]; // ['Symfony', 'Docker', 'AWS', 'React Native']
+    description_short: string;
+    image_url?: string;
+    github_url?: string;
+    live_url?: string;
+    created_at: string;
+    is_featured: boolean; // Pour mettre en avant sur ta home
+}

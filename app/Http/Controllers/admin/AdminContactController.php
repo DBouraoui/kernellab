@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class AdminContactController extends Controller
 {
-//todo crud pour les messages et envoie par email automatique a chaque message recus
+//todo faire l'envoie par email
     public function index() {
 
         $contacts = Contact::all()->sortByDesc('created_at');
