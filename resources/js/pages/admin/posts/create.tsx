@@ -11,11 +11,18 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import TagsSelector from '@/pages/admin/posts/tags-selector';
 import { toast } from 'sonner';
-import MarkdownEditor from '@/pages/admin/posts/markdown-editor';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Eye, Edit3 } from "lucide-react";
+import 'highlight.js/styles/atom-one-dark.css'; // Ou ton style préféré
 import PictureUploader from '@/pages/admin/posts/Picture-uploader';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Send } from "lucide-react";
+import MarkdownEditor from '@/pages/admin/posts/markdown-editor';
 
 const schema = z.object({
     title: z.string().min(2, "Le titre est trop court"),
@@ -119,12 +126,9 @@ export default function Create() {
                                             control={form.control}
                                             name="content"
                                             render={({ field }) => (
-                                                <FormItem>
+                                                <FormItem className="flex flex-col space-y-2">
                                                     <FormControl>
-                                                        <div className="min-h-[400px] rounded-md border">
-                                                            {/*@ts-ignore*/}
-                                                            <MarkdownEditor field={field}/>
-                                                        </div>
+                                                        <MarkdownEditor field={field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
