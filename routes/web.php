@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
            Route::get('/project', 'index')->name('admin.project.index');
             Route::get('/project/add', 'create')->name('admin.project.create');
             Route::post('/project', 'store')->name('admin.project.store');
+            Route::delete('/project/{id}', 'destroy')->name('admin.project.delete');
         });
     });
 });

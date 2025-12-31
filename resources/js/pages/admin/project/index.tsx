@@ -33,7 +33,7 @@ export default function AdminProject({ projects }: { projects: any }) {
 
     const deleteProject = (id: number) => {
         if (confirm('Es-tu sûr de vouloir supprimer ce projet ?')) {
-            router.delete(`/dashboard/projects/${id}`, {
+            router.delete(`/dashboard/project/${id}`, {
                 onSuccess: () => toast.success('Projet supprimé'),
                 onError: () => toast.error('Erreur lors de la suppression')
             });
