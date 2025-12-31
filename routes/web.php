@@ -47,8 +47,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(AdminProjectController::class)->group(function () {
            Route::get('/project', 'index')->name('admin.project.index');
             Route::get('/project/add', 'create')->name('admin.project.create');
+            Route::get('/project/{id}/edit', 'edit')->name('admin.project.edit');
             Route::post('/project', 'store')->name('admin.project.store');
+            Route::put('/project/{id}', 'update')->name('admin.project.update');
             Route::delete('/project/{id}', 'destroy')->name('admin.project.delete');
+            Route::patch('/project/{id}/toggle-featured', 'toggleFeatured')->name('admin.project.toggleFeatured');
         });
     });
 });

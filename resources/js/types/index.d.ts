@@ -73,6 +73,7 @@ export interface ProjectType {
     category: 'devops' | 'cloud' | 'web' | 'mobile' | 'opensource' | 'saas';
     status: 'draft' | 'published' | 'archived';
     stack: string[]; // ['Symfony', 'Docker', 'AWS', 'React Native']
+    content: string;
     description_short: string;
     image_url?: string;
     github_url?: string;

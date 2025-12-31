@@ -42,7 +42,7 @@ export default function AdminProject({ projects }: { projects: any }) {
 
     const toggleFeatured = (id: number) => {
         // On envoie un patch ou un post vers une route dédiée
-        router.post(`/dashboard/projects/${id}/toggle-featured`, {}, {
+        router.patch(`/dashboard/project/${id}/toggle-featured`, {}, {
             preserveScroll: true,
             onSuccess: () => toast.success('Statut mis à jour')
         });
@@ -128,7 +128,7 @@ export default function AdminProject({ projects }: { projects: any }) {
                                                     <Star className={`h-4 w-4 ${project.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
                                                 </Button>
                                                 <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                                                    <Link href={`/dashboard/projects/${project.id}/edit`}>
+                                                    <Link href={`/dashboard/project/${project.id}/edit`}>
                                                         <Pencil className="h-4 w-4 text-muted-foreground" />
                                                     </Link>
                                                 </Button>
