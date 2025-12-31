@@ -21,8 +21,6 @@ export default function ThumbnailUploader({ value, onChange }: ThumbnailUploader
         formData.append('image', file);
 
         try {
-            // Si une image existe déjà, on pourrait la supprimer avant d'uploader la nouvelle
-            // mais souvent on laisse l'utilisateur gérer ou on écrase.
             const response = await axios.post('/dashboard/upload-thumbnail', formData);
             onChange(response.data.url);
             toast.success("Image de couverture mise à jour");

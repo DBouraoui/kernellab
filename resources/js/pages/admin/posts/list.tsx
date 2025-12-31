@@ -1,520 +1,151 @@
-import { Head, router } from '@inertiajs/react';
-import { useState, useMemo } from 'react';
-import { Separator } from '@/components/ui/separator';
+import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem, Post } from '@/types';
-import { dashboard } from '@/routes';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Calendar, Eye, ArrowUpDown, Search, Filter, X, Tag, Image, Loader2 } from "lucide-react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from '@/components/ui/carousel';
-import { toast } from 'sonner';
-import UpdatePost from '@/pages/admin/posts/update';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Plus, Search, MoreHorizontal, FileText, Calendar, Trash2, Edit3, ExternalLink } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import admin from '@/routes/admin';
 
-export default function List({ posts }: { posts: Post[] }) {
-    const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Dashboard', href: dashboard().url },
-        { title: 'Voir les articles', href: '/dashboard/view' },
+export default function Index({ posts }: { posts: any[] }) {
+
+    const breadcrumbs = [
+        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Articles', href: '/dashboard/posts' },
     ];
-
-    const postsArray = Object.values(posts);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [sortBy, setSortBy] = useState<string>('created_desc');
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [filterWithImages, setFilterWithImages] = useState<boolean | null>(null);
-    const [dateRange, setDateRange] = useState<string>('all');
-
-    // Extraire tous les tags uniques
-    const allTags = useMemo(() => {
-        const tags = new Set<string>();
-        postsArray.forEach(post => {
-            post.tags?.forEach(tag => tags.add(tag));
-        });
-        return Array.from(tags).sort();
-    }, [postsArray]);
-
-    // Fonction de tri et filtrage
-    const sortedAndFilteredPosts = useMemo(() => {
-        let filtered = [...postsArray];
-
-        // Filtrage par recherche
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(post =>
-                post.title.toLowerCase().includes(query) ||
-                post.description.toLowerCase().includes(query) ||
-                post.tags?.some(tag => tag.toLowerCase().includes(query))
-            );
-        }
-
-        // Filtrage par tags
-        if (selectedTags.length > 0) {
-            filtered = filtered.filter(post =>
-                post.tags?.some(tag => selectedTags.includes(tag))
-            );
-        }
-
-        // Filtrage par présence d'images
-        if (filterWithImages !== null) {
-            filtered = filtered.filter(post =>
-                filterWithImages ? (post.image && post.image.length > 0) : (!post.image || post.image.length === 0)
-            );
-        }
-
-        // Filtrage par période
-        if (dateRange !== 'all') {
-            const now = new Date();
-            const filterDate = new Date();
-
-            switch (dateRange) {
-                case 'today':
-                    filterDate.setHours(0, 0, 0, 0);
-                    break;
-                case 'week':
-                    filterDate.setDate(now.getDate() - 7);
-                    break;
-                case 'month':
-                    filterDate.setMonth(now.getMonth() - 1);
-                    break;
-                case '3months':
-                    filterDate.setMonth(now.getMonth() - 3);
-                    break;
-                case 'year':
-                    filterDate.setFullYear(now.getFullYear() - 1);
-                    break;
-            }
-
-            filtered = filtered.filter(post =>
-                new Date(post.created_at) >= filterDate
-            );
-        }
-
-        // Tri
-        filtered.sort((a, b) => {
-            switch (sortBy) {
-                case 'created_desc':
-                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                case 'created_asc':
-                    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-                case 'updated_desc':
-                    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-                case 'updated_asc':
-                    return new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
-                case 'title_asc':
-                    return a.title.localeCompare(b.title);
-                case 'title_desc':
-                    return b.title.localeCompare(a.title);
-                default:
-                    return 0;
-            }
-        });
-
-        return filtered;
-    }, [postsArray, sortBy, searchQuery, selectedTags, filterWithImages, dateRange]);
-
-    const toggleTag = (tag: string) => {
-        setSelectedTags(prev =>
-            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-        );
-    };
-
-    const clearAllFilters = () => {
-        setSearchQuery('');
-        setSelectedTags([]);
-        setFilterWithImages(null);
-        setDateRange('all');
-        setSortBy('created_desc');
-    };
-
-    const activeFiltersCount =
-        (searchQuery ? 1 : 0) +
-        selectedTags.length +
-        (filterWithImages !== null ? 1 : 0) +
-        (dateRange !== 'all' ? 1 : 0);
-
-    function onDelete(post : Post) {
-        setIsLoading(true);
-        router.delete(`/dashboard/post/${post.id}`, {
-            onSuccess: () => {
-                toast.success('L\'article a été supprimer avec succès !');
-            },
-            onError: () => {
-                toast.error('erreur l\'or de la suppression du post !');
-            },
-            onFinish:()=> {
-                setIsLoading(false);
-        }
-        });
-    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Voir les articles" />
+            <Head title="Articles" />
 
-            <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col gap-8">
-                    {/* Header */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Articles
-                                </h1>
-                                <p className="text-muted-foreground mt-2">
-                                    Gérez et consultez tous vos articles publiés
-                                </p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Badge variant="secondary" className="text-lg px-4 py-2">
-                                    {sortedAndFilteredPosts.length} / {postsArray.length} article{postsArray.length > 1 ? 's' : ''}
-                                </Badge>
-                            </div>
-                        </div>
+            <div className="max-w-[1400px] mx-auto py-8 px-4 sm:px-6">
+
+                {/* --- HEADER --- */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Articles</h1>
+                        <p className="text-muted-foreground">Gérez vos publications et le contenu de votre blog.</p>
                     </div>
+                    <Button asChild className="rounded-xl shadow-lg shadow-primary/20 bg-blue-600 hover:bg-blue-700">
+                        <Link href={admin.post.create()}>
+                            <Plus className="mr-2 h-4 w-4" /> Nouvel Article
+                        </Link>
+                    </Button>
+                </div>
 
-                    <Separator />
-
-                    {/* Barre de recherche, filtres et tri */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            {/* Recherche */}
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Rechercher par titre, description ou tag..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10"
-                                />
-                            </div>
-
-                            {/* Filtres */}
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="relative">
-                                        <Filter className="mr-2 h-4 w-4" />
-                                        Filtres
-                                        {activeFiltersCount > 0 && (
-                                            <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center" variant="destructive">
-                                                {activeFiltersCount}
-                                            </Badge>
-                                        )}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-80" align="end">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="font-semibold">Filtres</h4>
-                                            {activeFiltersCount > 0 && (
-                                                <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-                                                    Réinitialiser
-                                                </Button>
-                                            )}
-                                        </div>
-
-                                        <Separator />
-
-                                        {/* Filtre par période */}
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium flex items-center gap-2">
-                                                <Calendar className="h-4 w-4" />
-                                                Période
-                                            </label>
-                                            <Select value={dateRange} onValueChange={setDateRange}>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">Toutes les périodes</SelectItem>
-                                                    <SelectItem value="today">Aujourd'hui</SelectItem>
-                                                    <SelectItem value="week">Cette semaine</SelectItem>
-                                                    <SelectItem value="month">Ce mois</SelectItem>
-                                                    <SelectItem value="3months">3 derniers mois</SelectItem>
-                                                    <SelectItem value="year">Cette année</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <Separator />
-
-                                        {/* Filtre par images */}
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium flex items-center gap-2">
-                                                <Image className="h-4 w-4" />
-                                                Images
-                                            </label>
-                                            <div className="space-y-2">
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox
-                                                        id="with-images"
-                                                        checked={filterWithImages === true}
-                                                        onCheckedChange={(checked) =>
-                                                            setFilterWithImages(checked ? true : null)
-                                                        }
-                                                    />
-                                                    <label htmlFor="with-images" className="text-sm cursor-pointer">
-                                                        Avec images
-                                                    </label>
-                                                </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox
-                                                        id="without-images"
-                                                        checked={filterWithImages === false}
-                                                        onCheckedChange={(checked) =>
-                                                            setFilterWithImages(checked ? false : null)
-                                                        }
-                                                    />
-                                                    <label htmlFor="without-images" className="text-sm cursor-pointer">
-                                                        Sans images
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <Separator />
-
-                                        {/* Filtre par tags */}
-                                        {allTags.length > 0 && (
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-medium flex items-center gap-2">
-                                                    <Tag className="h-4 w-4" />
-                                                    Tags ({selectedTags.length} sélectionné{selectedTags.length > 1 ? 's' : ''})
-                                                </label>
-                                                <div className="max-h-48 overflow-y-auto space-y-2">
-                                                    {allTags.map(tag => (
-                                                        <div key={tag} className="flex items-center space-x-2">
-                                                            <Checkbox
-                                                                id={`tag-${tag}`}
-                                                                checked={selectedTags.includes(tag)}
-                                                                onCheckedChange={() => toggleTag(tag)}
-                                                            />
-                                                            <label htmlFor={`tag-${tag}`} className="text-sm cursor-pointer flex-1">
-                                                                {tag}
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-
-                            {/* Tri */}
-                            <div className="flex items-center gap-2">
-                                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-[220px]">
-                                        <SelectValue placeholder="Trier par" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="created_desc">Plus récents</SelectItem>
-                                        <SelectItem value="created_asc">Plus anciens</SelectItem>
-                                        <SelectItem value="updated_desc">Dernière modification</SelectItem>
-                                        <SelectItem value="updated_asc">Première modification</SelectItem>
-                                        <SelectItem value="title_asc">Titre (A → Z)</SelectItem>
-                                        <SelectItem value="title_desc">Titre (Z → A)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        {/* Filtres actifs */}
-                        {activeFiltersCount > 0 && (
-                            <div className="flex flex-wrap gap-2 items-center">
-                                <span className="text-sm text-muted-foreground">Filtres actifs:</span>
-                                {searchQuery && (
-                                    <Badge variant="secondary" className="gap-1">
-                                        Recherche: {searchQuery}
-                                        <X className="h-3 w-3 cursor-pointer" onClick={() => setSearchQuery('')} />
-                                    </Badge>
-                                )}
-                                {dateRange !== 'all' && (
-                                    <Badge variant="secondary" className="gap-1">
-                                        Période: {dateRange}
-                                        <X className="h-3 w-3 cursor-pointer" onClick={() => setDateRange('all')} />
-                                    </Badge>
-                                )}
-                                {filterWithImages !== null && (
-                                    <Badge variant="secondary" className="gap-1">
-                                        {filterWithImages ? 'Avec images' : 'Sans images'}
-                                        <X className="h-3 w-3 cursor-pointer" onClick={() => setFilterWithImages(null)} />
-                                    </Badge>
-                                )}
-                                {selectedTags.map(tag => (
-                                    <Badge key={tag} variant="secondary" className="gap-1">
-                                        {tag}
-                                        <X className="h-3 w-3 cursor-pointer" onClick={() => toggleTag(tag)} />
-                                    </Badge>
-                                ))}
-                                <Button variant="ghost" size="sm" onClick={clearAllFilters}>
-                                    Tout effacer
-                                </Button>
-                            </div>
-                        )}
+                {/* --- BARRE DE RECHERCHE & STATS RAPIDES --- */}
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
+                    <div className="relative w-full md:w-96">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Rechercher un article..."
+                            className="pl-10 bg-background/50 border-muted-foreground/20 rounded-xl"
+                            // Ajoute ta logique de recherche ici
+                        />
                     </div>
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg">
+                        <FileText className="h-4 w-4" />
+                        {posts.length} Articles au total
+                    </div>
+                </div>
 
-                    {/* Grille d'articles */}
-                    {sortedAndFilteredPosts.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {sortedAndFilteredPosts.map((item: Post) => (
-                                <Card
-                                    key={item.id}
-                                    className="group flex flex-col h-full overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
-                                >
-                                    {item.image && item.image.length > 0 && (
-                                        <div className="relative overflow-hidden bg-muted">
-                                            <Carousel className="w-full">
-                                                <CarouselContent>
-                                                    {item.image.map((img, index) => (
-                                                        <CarouselItem key={index}>
-                                                            <div className="relative aspect-video overflow-hidden">
-                                                                <img
-                                                                    src={img}
-                                                                    alt={`${item.title} - Image ${index + 1}`}
-                                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                                />
-                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                                            </div>
-                                                        </CarouselItem>
-                                                    ))}
-                                                </CarouselContent>
-                                                {item.image.length > 1 && (
-                                                    <>
-                                                        <CarouselPrevious className="left-2" />
-                                                        <CarouselNext className="right-2" />
-                                                    </>
-                                                )}
-                                            </Carousel>
-                                            {item.image.length > 1 && (
-                                                <Badge className="absolute top-2 right-2 bg-black/70">
-                                                    {item.image.length} photos
-                                                </Badge>
-                                            )}
+                <Separator className="mb-8" />
+
+                {/* --- GRILLE D'ARTICLES --- */}
+                {posts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {posts.map((post) => (
+                            <Card key={post.id} className="group overflow-hidden border-none shadow-sm bg-card/60 hover:shadow-md transition-all">
+                                {/* Thumbnail Preview */}
+                                <div className="relative aspect-video overflow-hidden bg-muted">
+                                    {post.thumbnail ? (
+                                        <img
+                                            src={post.thumbnail}
+                                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                                            alt={post.title}
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                                            <FileText className="h-10 w-10 opacity-20" />
                                         </div>
                                     )}
+                                    <div className="absolute top-2 right-2 flex gap-2">
+                                        <Badge className={`${post.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'} border-none`}>
+                                            {post.status === 'published' ? 'Public' : 'Brouillon'}
+                                        </Badge>
+                                    </div>
+                                </div>
 
-                                    <CardHeader className="space-y-3">
-                                        <CardTitle className="text-xl font-bold line-clamp-2 group-hover:text-primary transition-colors">
-                                            {item.title}
+                                <CardHeader className="p-4 pb-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <CardTitle className="text-lg font-bold line-clamp-2 leading-snug min-h-[3.5rem]">
+                                            {post.title}
                                         </CardTitle>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-48">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => router.get(`/dashboard/post/edit/${post.id}`)}>
+                                                    <Edit3 className="mr-2 h-4 w-4" /> Modifier
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <ExternalLink className="mr-2 h-4 w-4" /> Voir l'article
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    className="text-destructive focus:bg-destructive/10"
+                                                    onClick={()=>router.delete('/dashboard/post/'+post.id)}
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </CardHeader>
 
-                                        {item.tags && item.tags.length > 0 && (
-                                            <div className="flex flex-wrap gap-2">
-                                                {item.tags.slice(0, 3).map((tag, idx) => (
-                                                    <Badge
-                                                        key={idx}
-                                                        variant="outline"
-                                                        className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                                                        onClick={() => {
-                                                            if (!selectedTags.includes(tag)) {
-                                                                toggleTag(tag);
-                                                            }
-                                                        }}
-                                                    >
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                                {item.tags.length > 3 && (
-                                                    <Badge variant="outline" className="text-xs">
-                                                        +{item.tags.length - 3}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        )}
-                                    </CardHeader>
+                                <CardContent className="p-4 pt-0">
+                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                                        {post.description}
+                                    </p>
+                                    <div className="flex flex-wrap gap-1.5 mb-4">
+                                        {post.tags?.slice(0, 2).map((tag: string) => (
+                                            <span key={tag} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-muted rounded">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </CardContent>
 
-                                    <CardContent className="flex-1 space-y-4">
-                                        <CardDescription className="line-clamp-3 text-sm leading-relaxed">
-                                            {item.description}
-                                        </CardDescription>
-
-                                        <div className="flex flex-col gap-2 text-xs text-muted-foreground pt-2 border-t">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-3 w-3" />
-                                                <span>Créé le {new Date(item.created_at).toLocaleDateString('fr-FR', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })}</span>
-                                            </div>
-                                            {item.created_at !== item.updated_at && (
-                                                <div className="flex items-center gap-2">
-                                                    <Eye className="h-3 w-3" />
-                                                    <span>Mis à jour le {new Date(item.updated_at).toLocaleDateString('fr-FR', {
-                                                        day: 'numeric',
-                                                        month: 'short',
-                                                        year: 'numeric'
-                                                    })}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </CardContent>
-
-                                    <CardFooter className="flex gap-2 bg-muted/50 p-4">
-                                        <UpdatePost post={item} />
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            className="flex-1"
-                                            onClick={()=>onDelete(item)}
-                                        >
-                                            {
-                                                isLoading ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                        Supression...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Supprimer
-                                                    </>
-                                                )
-                                            }
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            ))}
+                                <CardFooter className="p-4 pt-0 flex items-center justify-between text-[11px] text-muted-foreground border-t border-muted/50 mt-auto">
+                                    <div className="flex items-center gap-1 mt-3">
+                                        <Calendar className="h-3 w-3" />
+                                        {new Date(post.created_at).toLocaleDateString('fr-FR')}
+                                    </div>
+                                    <div className="mt-3 font-medium">
+                                        {post.reading_time || '5 min'} read
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
+                        <div className="bg-background p-4 rounded-full shadow-sm mb-4">
+                            <FileText className="h-10 w-10 text-muted-foreground/40" />
                         </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-16 text-center">
-                            <div className="rounded-full bg-muted p-6 mb-4">
-                                <Search className="h-12 w-12 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-xl font-semibold mb-2">Aucun résultat</h3>
-                            <p className="text-muted-foreground mb-6">
-                                Aucun article ne correspond à vos critères de recherche
-                            </p>
-                            <Button onClick={clearAllFilters}>
-                                Réinitialiser les filtres
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                        <h3 className="text-lg font-semibold">Aucun article pour le moment</h3>
+                        <p className="text-muted-foreground mb-6 text-sm">Commencez à rédiger votre premier contenu technique.</p>
+                        <Button asChild variant="outline">
+                            <Link href={admin.post.create()}>Créer mon premier article</Link>
+                        </Button>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

@@ -19,6 +19,13 @@ class AdminPostController extends Controller
         return Inertia::render('admin/posts/list', compact('posts'));
     }
 
+    public function edit(int $id) {
+
+       $post = Post::findOrFail($id);
+
+        return Inertia::render('admin/posts/edit', compact('post'));
+    }
+
     public function create()
     {
         return Inertia::render('admin/posts/create');
@@ -54,15 +61,23 @@ class AdminPostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        $post->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'content' => $request->content,
+        // On valide (pense à mettre à jour tes règles si besoin)
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'required|string',
+            'reading_time' => 'nullable|string',
+            'status' => 'required|in:draft,published,archived',
+            'tags' => 'nullable|array',
         ]);
 
+        // On update tout sauf le thumbnail (comme demandé)
+        $post->update($data);
+
+        // On redirige vers la liste avec un message flash
         return redirect()
-            ->route('admin.post.list')
-            ->with('success', 'Article modifié avec succès');
+            ->route('admin.post.list') // Vérifie bien le nom de ta route ici
+            ->with('success', 'Article mis à jour avec succès');
     }
 
     public function store(Request $request) {
@@ -74,6 +89,7 @@ class AdminPostController extends Controller
             'image' => 'nullable|array',
             'reading_time' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:draft,published,archived'],
+            'thumbnail' => ['nullable', 'string'],
         ]);
 
         Post::create([
@@ -85,10 +101,11 @@ class AdminPostController extends Controller
             'image'       => $validated['image'],
             'reading_time' => $validated['reading_time'],
             'status'      => $validated['status'],
+            'thumbnail'   => $validated['thumbnail'],
             'user_id' => auth()->id(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Article créé !');
+        return redirect()->route('admin.post.list')->with('success', 'Article créé !');
     }
 
     public function uploadImages(Request $request)

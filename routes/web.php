@@ -32,9 +32,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(AdminPostController::class)->group(function () {
             Route::get('/post/view', 'list')->name('admin.post.list');
             Route::get('/post/add', 'create')->name('admin.post.create');
+            Route::get('/post/edit/{id}', 'edit')->name('admin.post.edit');
+
             Route::patch('/post/{id}', 'update')->name('admin.post.update');
             Route::post('/store', 'store')->name('admin.post.store');
             Route::delete('/post/{id}', 'delete')->name('admin.post.delete');
+
             Route::post('/upload-images', 'uploadImages');
             Route::post('/upload-thumbnail', 'uploadThumbnail');
             Route::post('/delete-thumbnail', 'deleteThumbnail');

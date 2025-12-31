@@ -25,7 +25,8 @@ class Post extends Model
         'image',
         'user_id',
         'reading_time',
-        'status'
+        'status',
+        'thumbnail'
     ];
 
     /**

@@ -20,6 +20,7 @@ import {
     Folder,
     GitForkIcon,
     LayoutGrid,
+    Newspaper,
     StickyNote,
 } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -32,14 +33,9 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Créer un article',
-        href: admin.post.create(),
-        icon: StickyNote,
-    },
-    {
-        title: 'Voir les articles',
+        title: 'Mes articles',
         href: admin.post.list(),
-        icon: EyeIcon,
+        icon: Newspaper,
     },
     {
         title: 'Mes contacts',

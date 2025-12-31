@@ -50,6 +50,9 @@ export interface Post {
     content: string;
     tags: string[];
     image: string[];
+    thumbnail: string;
+    reading_time: string;
+    status: string;
     user_id: number;
     created_at: string;
     updated_at: string;
