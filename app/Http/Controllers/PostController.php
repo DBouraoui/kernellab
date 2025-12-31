@@ -70,6 +70,8 @@ class PostController extends Controller
             'content' => ['required', 'string'],
             'tags' => ['required', 'array', 'min:1'],
             'image' => 'nullable|array',
+            'reading_time' => ['required', 'numeric', 'min:0'],
+            'status' => ['required', 'in:draft,published,archived'],
         ]);
 
         Post::create([
@@ -79,6 +81,8 @@ class PostController extends Controller
             'content'     => $validated['content'],
             'tags'        => $validated['tags'],
             'image'       => $validated['image'],
+            'reading_time' => $validated['reading_time'],
+            'status'      => $validated['status'],
             'user_id' => auth()->id(),
         ]);
 

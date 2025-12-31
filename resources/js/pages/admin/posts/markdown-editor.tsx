@@ -16,6 +16,8 @@ interface MarkdownEditorProps {
         content: string;
         tags?: string[];
         image?: string[];
+        status?: string;
+        reading_time?: string;
     }, 'content'>;
 }
 

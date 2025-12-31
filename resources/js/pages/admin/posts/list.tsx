@@ -7,7 +7,7 @@ import { dashboard } from '@/routes';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Calendar, Eye, ArrowUpDown, Search, Filter, X, Tag, Image, Loader2 } from "lucide-react";
+import { Trash2, Calendar, Eye, ArrowUpDown, Search, Filter, X, Tag, Image, Loader2 } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -168,10 +168,6 @@ export default function List({ posts }: { posts: Post[] }) {
                 setIsLoading(false);
         }
         });
-    }
-
-    function openPopinUpdate(item :Post){
-
     }
 
     return (
