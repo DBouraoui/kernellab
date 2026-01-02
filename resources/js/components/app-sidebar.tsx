@@ -16,7 +16,6 @@ import { Link } from '@inertiajs/react';
 import {
     BookOpen,
     ContactIcon,
-    Folder,
     GitForkIcon,
     LayoutGrid,
     Newspaper,

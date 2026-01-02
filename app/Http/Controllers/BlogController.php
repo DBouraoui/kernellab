@@ -41,8 +41,6 @@ class BlogController extends Controller
             ->where('published_at', '<=', now()) // On ne montre pas le futur
             ->firstOrFail();
 
-
-
         return Inertia::render('blog/show', [
             'post' => $post,
             'user'=>$post->user,

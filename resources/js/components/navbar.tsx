@@ -24,7 +24,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { about, blog, contact, home } from '@/routes';
+import { about, blog, contact, home, newsletter } from '@/routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 interface MenuItem {
@@ -71,6 +71,14 @@ const Navbar = ({
                              url: blog().url,
                          },
                          {
+                             title: "Contact",
+                             url: contact().url,
+                         },
+                         {
+                             title: "Newsletter",
+                             url: newsletter().url,
+                         },
+                         {
                              title: "Projets",
                              url: "#",
                              items: [
@@ -97,10 +105,7 @@ const Navbar = ({
                                  },
                              ]
                          },
-                         {
-                             title: "Contact",
-                             url: contact().url,
-                         },
+
                          {
                              title: "A propos",
                              url: about().url,

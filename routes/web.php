@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\NewsletterController;
 use Illuminate\Support\Facades\Route;
 
 // --- Routes Publiques (Guest) ---
@@ -24,6 +25,11 @@ Route::controller(BlogController::class)->group(function () {
 Route::controller(ContactController::class)->group(function () {
     Route::get('/contact', 'index')->name('contact');
     Route::post('/contact', 'store')->name('contact.store');
+});
+
+Route::controller(NewsletterController::class)->group(function () {
+    Route::get('/newsletter', 'index')->name('newsletter');
+    Route::post('/newsletter', 'store')->name('newsletter.store');
 });
 
 // --- Routes Protégées (Auth) ---
