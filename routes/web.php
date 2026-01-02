@@ -17,6 +17,7 @@ Route::controller(GuestController::class)->group(function () {
 
 Route::controller(BlogController::class)->group(function () {
     Route::get('/blog', 'index')->name('blog');
+    Route::get('/blog/{post}', 'show')->name('blog.show');
 });
 
 // --- Routes Contact ---

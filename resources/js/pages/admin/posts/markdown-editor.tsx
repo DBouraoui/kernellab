@@ -9,19 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 
-interface MarkdownEditorProps {
-    field: ControllerRenderProps<{
-        title: string;
-        description: string;
-        content: string;
-        tags?: string[];
-        image?: string[];
-        status?: string;
-        reading_time?: string;
-    }, 'content'>;
-}
-
-export default function MarkdownEditor({ field }: MarkdownEditorProps) {
+export default function MarkdownEditor({ field }: any) {
     return (
         <>
             <Tabs defaultValue="edit" className="w-full border rounded-md overflow-hidden">

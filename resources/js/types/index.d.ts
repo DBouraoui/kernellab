@@ -1,5 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
+import Post from '@/routes/admin/post';
 
 export interface Auth {
     user: User;
@@ -42,7 +43,7 @@ export interface User {
     [key: string]: unknown;
 }
 
-export interface Post {
+export interface PostInterface {
     id: number;
     title: string;
     description: string;
@@ -53,9 +54,17 @@ export interface Post {
     thumbnail: string;
     reading_time: string;
     status: string;
+    published_at: string;
+    category: string;
     user_id: number;
     created_at: string;
     updated_at: string;
+}
+
+export interface BlogIndexProps {
+    posts: PostInterface[];
+    comingSoon: PostInterface[];
+    allTags: string[];
 }
 
 export interface ContactType {

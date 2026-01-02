@@ -17,6 +17,8 @@ export const ArticleSchema = z.object({
     image: z.array(z.string()),
     reading_time: z.string().min(1, "Le reading time est requise"),
     thumbnail: z.string().min(1, "Le thumbnail est requise"),
+    published_at: z.string(),
+    category: z.string().min(2, "Le category est requise"),
 })
 
 export const ArticleSchemaUpdate = z.object({

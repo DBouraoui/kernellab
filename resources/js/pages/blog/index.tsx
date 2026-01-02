@@ -1,243 +1,173 @@
-import { Head, Link } from '@inertiajs/react';
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Clock, CalendarDays, Sparkles } from 'lucide-react';
-
-// Supposons que tu as un layout public pour ton blog
-// Si ce n'est pas le cas, tu peux juste utiliser un div pour commencer.
+import React, { useMemo } from 'react';
+import { BlogIndexProps } from '@/types';
 import GuestLayout from '@/layouts/guest-layout';
-import { Button } from '@/components/ui/button'; // Ou crée un PublicLayout si tu préfères
-
-interface Post {
-    id: number;
-    title: string;
-    description: string;
-    slug: string; // Pour les URLs propres
-    thumbnail: string | null;
-    tags: string[];
-    reading_time: string;
-    created_at: string;
-    updated_at: string;
-}
-
-interface BlogIndexProps {
-    posts: Post[];
-    comingSoon: Post[];
-    allTags: string[]; // Tous les tags disponibles pour le filtre
-}
+import { Head } from '@inertiajs/react';
+import { Hash, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { FeaturedPost } from '@/pages/blog/featuredPost';
+import { PostCard } from '@/pages/blog/postCard';
+import { Separator } from '@radix-ui/react-select';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function BlogIndex({ posts, comingSoon, allTags }: BlogIndexProps) {
-    // --- Logic pour les filtres et la recherche (à implémenter) ---
     const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
     const [searchQuery, setSearchQuery] = React.useState('');
 
-    const filteredPosts = posts.filter(post => {
-        const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
-        const matchesSearch = searchQuery
-            ? post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-            : true;
-        return matchesTag && matchesSearch;
-    });
+    // Optimisation avec useMemo
+    const filteredPosts = useMemo(() => {
+        return posts.filter(post => {
+            const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
+            const matchesSearch = searchQuery
+                ? post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+                : true;
+            return matchesTag && matchesSearch;
+        });
+    }, [posts, selectedTag, searchQuery]);
 
-    const latestPost = filteredPosts[0];
-    const otherPosts = filteredPosts.slice(1);
+    const latestPost = !selectedTag && !searchQuery ? filteredPosts[0] : null;
+    const gridPosts = !selectedTag && !searchQuery ? filteredPosts.slice(1) : filteredPosts;
 
     return (
-        // Utilise ton layout public ici
         <GuestLayout>
-            <Head title="Blog Tech | Votre Nom" />
+            <Head title="Blog Tech | Articles & Tutoriels" />
 
-            <div className="container max-w-5xl mx-auto py-12 px-4">
-                {/* HERO SECTION */}
-                <section className="text-center mb-16">
-                    <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-gradient">
-                        Le Blog Tech qui démystifie le dev
-                    </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Tutoriels, astuces et retours d'expériences sur Laravel, React, Vue.js, et bien plus encore.
-                    </p>
-                </section>
+            <div className="min-h-screen bg-background pb-20">
+                <div className="container max-w-6xl mx-auto px-4 sm:px-6 pt-12 md:pt-20">
 
-                {/* FILTRES PAR TAGS */}
-                {allTags.length > 0 && (
-                    <section className="mb-12 flex flex-wrap justify-center gap-3">
-                        <Badge
-                            variant={selectedTag === null ? "default" : "secondary"}
-                            className="cursor-pointer px-4 py-1.5 text-base"
-                            onClick={() => setSelectedTag(null)}
-                        >
-                            Tout
-                        </Badge>
-                        {allTags.map(tag => (
-                            <Badge
-                                key={tag}
-                                variant={selectedTag === tag ? "default" : "outline"}
-                                className="cursor-pointer px-4 py-1.5 text-base hover:bg-primary hover:text-primary-foreground"
-                                onClick={() => setSelectedTag(tag)}
-                            >
-                                {tag}
-                            </Badge>
-                        ))}
-                    </section>
-                )}
-
-                {comingSoon.length > 0 && (
-                    <section className="mb-20">
-                        <div className="flex items-center gap-2 mb-8">
-                            <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
-                            <h2 className="text-2xl font-bold tracking-tight">En cours de rédaction</h2>
+                    {/* --- HERO SECTION --- */}
+                    <section className="text-center mb-16 space-y-6">
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                            ✨ Nouveau contenu chaque semaine
                         </div>
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
+                            Explorez l'univers <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">Dev & Tech</span>
+                        </h1>
+                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                            Des articles approfondis, des tutoriels pratiques et des réflexions sur l'écosystème Laravel, React et l'architecture logicielle.
+                        </p>
+                    </section>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {comingSoon.map((draft) => (
-                                <div key={draft.id} className="relative group opacity-70 grayscale-[0.5]">
-                                    <Card className="border-dashed border-2 bg-muted/20 shadow-none overflow-hidden">
-                                        <div className="aspect-video bg-muted/50 flex items-center justify-center overflow-hidden">
-                                            {draft.thumbnail ? (
-                                                <img
-                                                    src={draft.thumbnail}
-                                                    className="object-cover w-full h-full blur-[2px]"
-                                                    alt="Draft"
-                                                />
-                                            ) : (
-                                                <Sparkles className="h-8 w-8 text-muted-foreground/20" />
-                                            )}
-                                            <div className="absolute inset-0 bg-background/40 flex items-center justify-center">
-                                                <Badge variant="outline" className="bg-background/80 backdrop-blur-sm border-dashed">
-                                                    Bientôt disponible
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                        <CardContent className="p-4">
-                                            <div className="h-5 w-3/4 bg-muted rounded mb-2 animate-pulse" />
-                                            <h3 className="font-semibold text-muted-foreground line-clamp-1 italic">
-                                                {draft.title}
-                                            </h3>
-                                        </CardContent>
-                                    </Card>
+                    {/* --- FILTER BAR (MODERNE) --- */}
+                    <section className="sticky top-4 z-30 mb-12">
+                        <div className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-sm rounded-2xl p-2 flex flex-col md:flex-row gap-4 items-center">
+                            {/* Search Input */}
+                            <div className="relative w-full md:w-72">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Rechercher un article..."
+                                    className="pl-9 bg-muted/50 border-transparent focus:bg-background transition-all rounded-xl"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+
+                            {/* Divider on desktop */}
+                            <div className="hidden md:block w-px h-8 bg-border/50 mx-2" />
+
+                            {/* Tags Scrollable */}
+                            <div className="flex-1 w-full overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant={selectedTag === null ? "default" : "ghost"}
+                                        size="sm"
+                                        onClick={() => setSelectedTag(null)}
+                                        className="rounded-lg font-medium"
+                                    >
+                                        Tous
+                                    </Button>
+                                    {allTags.map(tag => (
+                                        <Button
+                                            key={tag}
+                                            variant={selectedTag === tag ? "secondary" : "ghost"}
+                                            size="sm"
+                                            onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                                            className={`rounded-lg whitespace-nowrap ${selectedTag === tag ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200' : 'text-muted-foreground'}`}
+                                        >
+                                            <Hash className="h-3 w-3 mr-1 opacity-50" />
+                                            {tag}
+                                        </Button>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </section>
-                )}
 
-                {/* FEATURED POST (le plus récent) */}
-                {latestPost && (
-                    <section className="mb-16">
-                        <Link href={`/blog/${latestPost.slug}`} className="block group">
-                            <Card className="flex flex-col md:flex-row border-none shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden rounded-2xl">
-                                <div className="md:w-1/2 aspect-video md:aspect-auto overflow-hidden bg-muted">
-                                    {latestPost.thumbnail ? (
-                                        <img
-                                            src={latestPost.thumbnail}
-                                            alt={latestPost.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="flex items-center justify-center h-full text-muted-foreground/30">
-                                            <CalendarDays className="h-16 w-16" />
-                                        </div>
-                                    )}
-                                </div>
-                                <CardContent className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                        {latestPost.tags.map(tag => (
-                                            <Badge key={tag} variant="secondary" className="text-sm">
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                    <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-3 group-hover:text-primary transition-colors duration-300">
-                                        {latestPost.title}
-                                    </h2>
-                                    <p className="text-lg text-muted-foreground mb-4 line-clamp-3">
-                                        {latestPost.description}
-                                    </p>
-                                    <div className="flex items-center text-sm text-muted-foreground gap-4 mt-auto">
-                                        <span className="flex items-center gap-1">
-                                            <CalendarDays className="h-4 w-4" />
-                                            {new Date(latestPost.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Clock className="h-4 w-4" />
-                                            {latestPost.reading_time || '5 min'} min de lecture
-                                        </span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    </section>
-                )}
+                    {/* --- FEATURED POST --- */}
+                    {latestPost && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <FeaturedPost post={latestPost} />
+                        </div>
+                    )}
 
-                <Separator className="mb-12" />
-
-                {/* AUTRES ARTICLES (GRILLE SIMPLE) */}
-                {otherPosts.length > 0 && (
-                    <section>
-                        <h2 className="text-3xl font-bold mb-8 text-center">Nos Derniers Articles</h2>
+                    {/* --- POST GRID --- */}
+                    {gridPosts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {otherPosts.map(post => (
-                                <Link key={post.id} href={`/blog/${post.slug}`} className="block group">
-                                    <Card className="h-full flex flex-col border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
-                                        <div className="aspect-video overflow-hidden bg-muted">
-                                            {post.thumbnail ? (
-                                                <img
-                                                    src={post.thumbnail}
-                                                    alt={post.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="flex items-center justify-center h-full text-muted-foreground/30">
-                                                    <CalendarDays className="h-10 w-10" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <CardContent className="p-4 flex-grow flex flex-col">
-                                            <div className="flex flex-wrap gap-2 mb-2">
-                                                {post.tags.slice(0, 2).map(tag => (
-                                                    <Badge key={tag} variant="secondary" className="text-xs">
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                            <h3 className="text-xl font-bold leading-tight mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
-                                                {post.title}
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-grow">
-                                                {post.description}
-                                            </p>
-                                            <div className="flex items-center text-xs text-muted-foreground gap-4 mt-auto border-t pt-3">
-                                                <span className="flex items-center gap-1">
-                                                    <CalendarDays className="h-3 w-3" />
-                                                    {new Date(post.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Clock className="h-3 w-3" />
-                                                    {post.reading_time || '3 min'}
-                                                </span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
+                            {gridPosts.map((post, idx) => (
+                                <div key={post.id} className="animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards" style={{ animationDelay: `${idx * 100}ms` }}>
+                                    <PostCard post={post} />
+                                </div>
                             ))}
                         </div>
-                    </section>
-                )}
+                    ) : (
+                        <div className="text-center py-20 bg-muted/30 rounded-3xl border border-dashed">
+                            <Search className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold">Aucun résultat</h3>
+                            <p className="text-muted-foreground">Essayez une autre recherche ou un autre filtre.</p>
+                            <Button variant="link" onClick={() => { setSelectedTag(null); setSearchQuery(''); }}>
+                                Tout effacer
+                            </Button>
+                        </div>
+                    )}
 
-                {/* Aucun article trouvé */}
-                {filteredPosts.length === 0 && (
-                    <section className="text-center py-20">
-                        <h2 className="text-2xl font-bold mb-4">Aucun article trouvé</h2>
-                        <p className="text-muted-foreground">Essayez d'ajuster vos filtres ou votre recherche.</p>
-                        <Button variant="link" onClick={() => { setSelectedTag(null); setSearchQuery(''); }} className="mt-4">
-                            Réinitialiser la recherche
-                        </Button>
-                    </section>
-                )}
+                    <Separator className="my-16" />
+
+                    {/* --- COMING SOON SECTION (Brouillons) --- */}
+                    {comingSoon.length > 0 && (
+                        <section className="bg-muted/30 border border-dashed border-border rounded-3xl p-8 md:p-12">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                                <div>
+                                    <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
+                                        <span className="relative flex h-3 w-3">
+                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                                          <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+                                        </span>
+                                        Dans les tuyaux...
+                                    </h2>
+                                    <p className="text-muted-foreground mt-1">
+                                        Un petit aperçu des articles en cours de rédaction.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {comingSoon.map((draft) => (
+                                    <div key={draft.id} className="group relative opacity-60 hover:opacity-100 transition-opacity duration-300">
+                                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                                            <Badge variant="outline" className="bg-background/80 backdrop-blur text-xs font-mono uppercase tracking-widest border-dashed">
+                                                Bientôt
+                                            </Badge>
+                                        </div>
+                                        <Card className="h-full border-muted-foreground/10 bg-background/50 grayscale group-hover:grayscale-0 transition-all duration-500 shadow-none">
+                                            <div className="aspect-video bg-muted overflow-hidden rounded-t-xl">
+                                                {draft.thumbnail && (
+                                                    <img src={draft.thumbnail} className="w-full h-full object-cover blur-[1px] group-hover:blur-0 transition-all" alt="draft" />
+                                                )}
+                                            </div>
+                                            <CardContent className="p-4">
+                                                <h3 className="font-semibold line-clamp-1">{draft.title}</h3>
+                                                <p className="text-xs text-muted-foreground mt-2">Prévu prochainement</p>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+                </div>
             </div>
         </GuestLayout>
     );

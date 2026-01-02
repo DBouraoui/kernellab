@@ -33,4 +33,16 @@ class BlogController extends Controller
         ]);
         //todo faire un flux rss pour les articles
     }
+
+    public function show(string $slug)
+    {
+        $post = Post::where('slug', $slug)
+            ->where('status', 'published')
+            ->where('published_at', '<=', now()) // On ne montre pas le futur
+            ->firstOrFail();
+
+        return Inertia::render('blog/show', [
+            'post' => $post,
+        ]);
+    }
 }

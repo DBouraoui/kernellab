@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Search, MoreHorizontal, FileText, Calendar, Trash2, Edit3, ExternalLink } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, FileText, Calendar, Trash2, Edit3, ExternalLink, Clock } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import admin from '@/routes/admin';
+import { PostInterface } from '@/types';
 
-export default function Index({ posts }: { posts: any[] }) {
+export default function Index({ posts }: { posts: PostInterface[] }) {
 
     const breadcrumbs = [
         { title: 'Dashboard', href: admin.dashboard.url() },
@@ -119,16 +120,77 @@ export default function Index({ posts }: { posts: any[] }) {
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="p-4 pt-0">
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                                <CardContent className="p-4 pt-0 space-y-4">
+                                    {/* Section Catégorie */}
+                                    <div className="space-y-1.5">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Catégorie
+        </span>
+                                        {post.category ? (
+                                            <div>
+                <span className="text-[10px] font-black uppercase tracking-tighter text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800">
+                    {post.category}
+                </span>
+                                            </div>
+                                        ) : (
+                                            <p className="text-[10px] italic text-muted-foreground/40">Non classé</p>
+                                        )}
+                                    </div>
+
+                                    {/* Description */}
+                                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                                         {post.description}
                                     </p>
-                                    <div className="flex flex-wrap gap-1.5 mb-4">
-                                        {post.tags?.slice(0, 2).map((tag: string) => (
-                                            <span key={tag} className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-muted rounded">
-                                                {tag}
-                                            </span>
-                                        ))}
+
+                                    {/* Section Tags */}
+                                    <div className="space-y-1.5">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Tags
+        </span>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {post.tags && post.tags.length > 0 ? (
+                                                post.tags.slice(0, 3).map((tag: string) => (
+                                                    <span key={tag} className="text-[10px] font-medium px-2 py-0.5 bg-muted border border-muted-foreground/10 rounded-md">
+                        #{tag}
+                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="text-[10px] text-muted-foreground/40 italic">Aucun tag</span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Section Date Dynamique */}
+                                    <div className="pt-3 border-t border-muted/50">
+                                        <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                Planification
+            </span>
+                                            <div className="flex items-center gap-2">
+                                                {post.published_at ? (
+                                                    new Date(post.published_at) <= new Date() ? (
+                                                        <>
+                                                            <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                                                            <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                Publié le {new Date(post.published_at).toLocaleDateString('fr-FR')}
+                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
+                                                            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                                Prévu pour le {new Date(post.published_at).toLocaleDateString('fr-FR')}
+                            </span>
+                                                        </>
+                                                    )
+                                                ) : (
+                                                    <div className="flex items-center gap-2 text-muted-foreground/40 italic text-xs">
+                                                        <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" />
+                                                        Date non définie
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </CardContent>
 
@@ -137,7 +199,8 @@ export default function Index({ posts }: { posts: any[] }) {
                                         <Calendar className="h-3 w-3" />
                                         {new Date(post.created_at).toLocaleDateString('fr-FR')}
                                     </div>
-                                    <div className="mt-3 font-medium">
+                                    <div className="mt-3 font-medium flex flex-row justify-center items-center gap-1">
+                                        <Clock className="h-3 w-3" />
                                         {post.reading_time || '5 min'} min
                                     </div>
                                 </CardFooter>

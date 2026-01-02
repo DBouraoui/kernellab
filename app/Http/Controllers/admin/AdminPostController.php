@@ -90,6 +90,8 @@ class AdminPostController extends Controller
             'reading_time' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:draft,published,archived'],
             'thumbnail' => ['nullable', 'string'],
+            'category' => ['required', 'string'],
+            'published_at' => ['nullable', 'string'],
         ]);
 
         Post::create([
@@ -102,6 +104,8 @@ class AdminPostController extends Controller
             'reading_time' => $validated['reading_time'],
             'status'      => $validated['status'],
             'thumbnail'   => $validated['thumbnail'],
+            'category' => $validated['category'],
+            'published_at' => $validated['published_at'],
             'user_id' => auth()->id(),
         ]);
 

@@ -27,6 +27,7 @@ import MarkdownEditor from '@/pages/admin/posts/markdown-editor';
 import { ArticleSchema } from '@/types/zod-schemas';
 import ThumbnailUploader from '@/pages/admin/posts/thumbnail-uploader';
 import admin from '@/routes/admin';
+import { PublicationDatepicker } from '@/pages/admin/posts/publication-datepicker';
 
 export default function Create() {
     const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +48,9 @@ export default function Create() {
             image: [],
             status: "draft",
             reading_time: "",
-            thumbnail: ""
+            thumbnail: "",
+            published_at: "",
+            category: ""
         },
     })
 
@@ -206,6 +209,56 @@ export default function Create() {
                                                     </FormItem>
                                                 )}
                                             />
+                                            <FormField
+                                                control={form.control}
+                                                name="published_at"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <PublicationDatepicker field={field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="tags"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Tags de l'article</FormLabel>
+                                                        <FormControl>
+                                                            <TagsSelector field={field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="category"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground">Catégorie de l'article</FormLabel>
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="bg-background">
+                                                                    <SelectValue placeholder="Choisir une catégorie" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="web">Developpement web</SelectItem>
+                                                                <SelectItem value="ia">Intéligence artificiel</SelectItem>
+                                                                <SelectItem value="data">Data</SelectItem>
+                                                                <SelectItem value="devops">Devops</SelectItem>
+                                                                <SelectItem value="sys">Admin System</SelectItem>
+                                                                <SelectItem value="nodef">Non définie</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
                                         </CardContent>
                                     </Card>
 
@@ -250,27 +303,6 @@ export default function Create() {
                                                     <FormItem>
                                                         <FormControl>
                                                             <PictureUploader value={field.value} onChange={field.onChange} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Tags */}
-                                    <Card className="border-none bg-muted/30 shadow-none">
-                                        <CardHeader>
-                                            <CardTitle className="text-sm font-bold uppercase tracking-widest">Tags</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <FormField
-                                                control={form.control}
-                                                name="tags"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <TagsSelector field={field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>

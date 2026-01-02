@@ -22,10 +22,10 @@ import {
 } from 'lucide-react';
 import MarkdownEditor from '@/pages/admin/posts/markdown-editor';
 import { ArticleSchemaUpdate } from '@/types/zod-schemas';
-import { Post } from '@/types';
+import { PostInterface } from '@/types';
 import admin from '@/routes/admin';
 
-export default function Edit({ post }: { post: Post }) {
+export default function Edit({ post }: { post: PostInterface }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const breadcrumbs = [
@@ -136,7 +136,7 @@ export default function Edit({ post }: { post: Post }) {
                                         <CardHeader className="pb-3">
                                             <CardTitle className="text-xs font-bold flex items-center justify-between uppercase tracking-widest text-muted-foreground">
                                                 <span className="flex items-center gap-2"><ImageIcon className="h-3 w-3" /> Couverture</span>
-                                                <Badge variant="outline" className="text-[9px] gap-1 bg-background"><Lock className="h-2 w-2" /> Verrouillé</Badge>
+                                                <Badge  className="text-[9px] gap-1 bg-background"><Lock className="h-2 w-2" /> Verrouillé</Badge>
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>

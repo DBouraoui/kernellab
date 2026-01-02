@@ -11,15 +11,7 @@ import { ControllerRenderProps } from 'react-hook-form';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 
-export default function TagsSelector({ field }: { field: ControllerRenderProps<{
-        title: string;
-        description: string;
-        content: string;
-        tags: string[];
-        image: string[];
-        status?: string;
-        reading_time?: string;
-    }, 'tags'>}) {
+export default function TagsSelector({ field }: { field: any}) {
 
     const categories = [
         {

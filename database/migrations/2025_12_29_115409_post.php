@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->string('reading_time')->default("10");
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->dateTime('published_at')->nullable();
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });

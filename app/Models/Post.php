@@ -26,7 +26,9 @@ class Post extends Model
         'user_id',
         'reading_time',
         'status',
-        'thumbnail'
+        'thumbnail',
+        'published_at',
+        'category'
     ];
 
     /**
@@ -47,6 +49,7 @@ class Post extends Model
         return [
             'tags'=> 'array',
             'image' => 'array',
+            'published_at' => 'datetime',
         ];
     }
 }
