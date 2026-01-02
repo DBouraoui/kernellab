@@ -12,13 +12,13 @@ export default function TechStack() {
         {
             title: "Backend",
             icon: <Terminal className="h-5 w-5 text-emerald-500" />,
-            skills: ["Node.js", "Go", "PostgreSQL", "Prisma"],
+            skills: ["PHP", "Python", "Go", "PostgreSQL", "Mysql"],
             logos: ["Node", "Go", "Postgres"]
         },
         {
             title: "DevOps",
             icon: <Container className="h-5 w-5 text-blue-600" />,
-            skills: ["Docker", "Kubernetes", "Jenkins", "CI/CD"],
+            skills: ["Docker", "Ansible", "Kubernetes", "Jenkins", "CI/CD"],
             logos: ["Docker", "K8s"]
         },
         {

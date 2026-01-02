@@ -1,4 +1,6 @@
-import { Mountain, Github, Linkedin, Twitter, Terminal } from "lucide-react"
+import {  Github, Linkedin, Twitter, Terminal } from "lucide-react"
+import { Link } from '@inertiajs/react';
+import { about, blog, contact, home, newsletter } from '@/routes';
 
 export function Footer() {
     const currentYear = new Date().getFullYear()
@@ -10,14 +12,14 @@ export function Footer() {
 
                     {/* --- BRANDING --- */}
                     <div className="flex flex-col items-center md:items-start gap-2">
-                        <a href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                        <Link href={home()} className="flex items-center gap-2 font-bold text-xl tracking-tight">
                             <img
                                 src="/images/kernellab-logo.webp"
                                 className="max-h-14 dark:invert"
                                 alt="kernellab-logo"
                             />
                             <span>KernelLab.</span>
-                        </a>
+                        </Link>
                         <p className="text-sm text-muted-foreground max-w-xs text-center md:text-left">
                             Bâtir des infrastructures solides pour des applications d'exception.
                         </p>
@@ -25,26 +27,27 @@ export function Footer() {
 
                     {/* --- NAVIGATION RAPIDE --- */}
                     <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-muted-foreground">
-                        <a href="/blog" className="hover:text-primary transition-colors">Blog</a>
-                        <a href="/projets" className="hover:text-primary transition-colors">Projets</a>
-                        <a href="/about" className="hover:text-primary transition-colors">À propos</a>
-                        <a href="/contact" className="hover:text-primary transition-colors">Contact</a>
+                        <Link href={blog()} className="hover:text-primary transition-colors" prefetch>Blog</Link>
+                        <Link href="/projets" className="hover:text-primary transition-colors" prefetch>Projets</Link>
+                        <Link href={about()} className="hover:text-primary transition-colors">À propos</Link>
+                        <Link href={contact()} className="hover:text-primary transition-colors">Contact</Link>
+                        <Link href={newsletter()} className="hover:text-primary transition-colors">Newsletter</Link>
                     </nav>
 
                     {/* --- SOCIALS --- */}
                     <div className="flex items-center gap-4">
-                        <a href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                        <Link href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
                             <Github className="h-5 w-5" />
                             <span className="sr-only">GitHub</span>
-                        </a>
-                        <a href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                        </Link>
+                        <Link href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
                             <Linkedin className="h-5 w-5" />
                             <span className="sr-only">aedIn</span>
-                        </a>
-                        <a href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+                        </Link>
+                        <Link href="#" className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
                             <Twitter className="h-5 w-5" />
                             <span className="sr-only">Twitter</span>
-                        </a>
+                        </Link>
                     </div>
                 </div>
 

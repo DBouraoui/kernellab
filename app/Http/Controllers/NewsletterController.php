@@ -16,15 +16,19 @@ class NewsletterController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        if ($request->filled('honeyPot')) {
+            return back()->with('success', 'Bienvenue dans le club ! 🚀');
+        }
+
+        $validated = $request->validate([
             'email' => 'required|email|unique:newsletters,email',
-        ],[
-            'email.unique' => 'Une erreur est survenue lors de l\'enregistrement'
+        ], [
+            'email.unique' => 'Une erreur est survenue lors de l\'enregistrement',
         ]);
 
         Newsletter::create([
-            'email' => $request->email,
-            'active' => true
+            'email'  => $validated['email'],
+            'active' => true,
         ]);
 
         return back()->with('success', 'Bienvenue dans le club ! 🚀');

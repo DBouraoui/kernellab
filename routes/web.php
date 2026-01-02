@@ -25,12 +25,12 @@ Route::controller(BlogController::class)->group(function () {
 // --- Routes Contact ---
 Route::controller(ContactController::class)->group(function () {
     Route::get('/contact', 'index')->name('contact');
-    Route::post('/contact', 'store')->name('contact.store');
+    Route::post('/contact', 'store')->name('contact.store')->middleware('throttle:2,1');
 });
 
 Route::controller(NewsletterController::class)->group(function () {
     Route::get('/newsletter', 'index')->name('newsletter');
-    Route::post('/newsletter', 'store')->name('newsletter.store');
+    Route::post('/newsletter', 'store')->name('newsletter.store')->middleware('throttle:3,1');
 });
 
 // --- Routes Protégées (Auth) ---

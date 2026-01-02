@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import React from 'react';
 import GuestLayout from '@/layouts/guest-layout';
 import { Button } from '@/components/ui/button';
@@ -8,24 +8,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Mail, CheckCircle2, Zap, ShieldCheck, Sparkles, BellRing } from 'lucide-react';
 import { toast } from 'sonner';
+import { home } from '@/routes';
 
 export default function NewsletterPage() {
     const { data, setData, post, processing, reset, recentlySuccessful, errors } = useForm({
         email: '',
+        honeyPot: ''
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/newsletter', {
             onSuccess: () => {
-            reset();
             toast.success('Félicitation vous êtes bien inscrit à la newsletter !');
             },
             onError: () => {
                 toast.error('Une erreur est survenue, veullez réésayer plus tard' )
             },
             onFinish : ()=>{
-
+                reset();
+                //@ts-ignore
+                router.push(home().url)
             }
         });
     };
@@ -82,6 +85,12 @@ export default function NewsletterPage() {
                                             value={data.email}
                                             onChange={e => setData('email', e.target.value)}
                                             required
+                                        />
+                                        <Input
+                                            value={data.honeyPot}
+                                            name="honeyPot"
+                                            className="hidden"
+                                            onChange={e => setData('honeyPot', e.target.value)}
                                         />
                                     </div>
                                     <Button
