@@ -1,6 +1,5 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
-import Post from '@/routes/admin/post';
 
 export interface Auth {
     user: User;
@@ -31,7 +30,7 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
-export interface User {
+export interface UserInterface {
     id: number;
     name: string;
     email: string;
@@ -57,6 +56,7 @@ export interface PostInterface {
     published_at: string;
     category: string;
     user_id: number;
+    user?: UserInterface;
     created_at: string;
     updated_at: string;
 }
