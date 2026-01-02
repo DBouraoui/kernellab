@@ -15,7 +15,6 @@ import ButtonLoading from '@/components/ui/button-loading';
 import type { ProjectType } from '@/types';
 import admin from '@/routes/admin';
 
-// On étend le type pour inclure la string de stack préparée par le controller
 interface EditProjectProps {
     project: ProjectType & { stack_string?: string };
 }

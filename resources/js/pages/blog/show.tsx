@@ -32,17 +32,13 @@ export default function BlogShow({ post, user}: { post: PostInterface, user: Use
                 await navigator.share(shareData);
             } else {
                 await navigator.clipboard.writeText(window.location.href);
-                toast.success({
-                    title: "Lien copié !",
-                    description: "Le lien de l'article est dans votre presse-papier.",
-                });
+                toast.success("Le lien de l'article est dans votre presse-papier.");
             }
         } catch (err) {
             console.error("Erreur lors du partage :", err);
         }
     };
 
-    // Extraction des titres pour la TOC
     useEffect(() => {
         const regex = /^(#{2,3})\s+(.+)$/gm;
         const found = [];

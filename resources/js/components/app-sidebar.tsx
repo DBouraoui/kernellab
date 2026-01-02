@@ -18,6 +18,7 @@ import {
     ContactIcon,
     GitForkIcon,
     LayoutGrid,
+    Mailbox,
     Newspaper,
 } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -43,6 +44,11 @@ const mainNavItems: NavItem[] = [
         title: 'Mes projets',
         href: admin.project.index(),
         icon: GitForkIcon,
+    },
+    {
+        title: 'Abonnement newsletter',
+        href: admin.newsletter().url,
+        icon: Mailbox,
     }
 
 ];

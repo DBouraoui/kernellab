@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\admin\AdminNewsletterController;
 use App\Http\Controllers\admin\AdminPostController;
 use App\Http\Controllers\admin\AdminProjectController;
 use App\Http\Controllers\admin\DashboardController;
@@ -58,6 +59,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller(AdminContactController::class)->group(function () {
             Route::get('/contact', 'index')->name('admin.contact');
             Route::delete('/contact/{id}', 'destroy')->name('admin.contact.delete');
+        });
+
+        Route::controller(AdminNewsletterController::class)->group(function () {
+            Route::get('/newsletter', 'index')->name('admin.newsletter');
+            Route::get('/newsletter/export', 'export')->name('admin.newsletter.export');
+            Route::patch('/newsletter/{id}', 'toggleActive')->name('admin.newsletter.toggleactive');
+            Route::delete('/newsletter/{id}', 'destroy')->name('admin.newsletter.delete');
         });
 
         Route::controller(AdminProjectController::class)->group(function () {
