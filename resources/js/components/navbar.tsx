@@ -66,7 +66,6 @@ const Navbar = ({
                          title: "Kernellab",
                      },
                      menu = [
-                         { title: "Home", url: home().url },
                          {
                              title: "Blog",
                              url: blog().url,

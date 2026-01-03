@@ -5,7 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Search, MoreHorizontal, FileText, Calendar, Trash2, Edit3, ExternalLink, Clock } from 'lucide-react';
+import {
+    Plus,
+    Search,
+    MoreHorizontal,
+    FileText,
+    Calendar,
+    Trash2,
+    Edit3,
+    ExternalLink,
+    Clock,
+    EyeOff,
+} from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import admin from '@/routes/admin';
 import { PostInterface } from '@/types';
@@ -105,9 +116,20 @@ export default function Index({ posts }: { posts: PostInterface[] }) {
                                                 <DropdownMenuItem onClick={() => router.get(`/dashboard/post/edit/${post.id}`)}>
                                                     <Edit3 className="mr-2 h-4 w-4" /> Modifier
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <ExternalLink className="mr-2 h-4 w-4" /> Voir l'article
-                                                </DropdownMenuItem>
+                                                {
+                                                    // @ts-ignore
+                                                    new Date(post.published_at).getTime() <= Date.now()
+                                                        ? (
+                                                        <DropdownMenuItem onClick={() => router.get(`/blog/${post.slug}`)}>
+                                                            <ExternalLink className="mr-2 h-4 w-4" /> Voir l'article
+                                                        </DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem disabled >
+                                                            <EyeOff className="mr-2 h-4 w-4 text-orange-500" /> Article non publier
+                                                        </DropdownMenuItem>
+                                                    )
+                                                }
+
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
                                                     className="text-destructive focus:bg-destructive/10"
@@ -177,8 +199,8 @@ export default function Index({ posts }: { posts: PostInterface[] }) {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
-                                                            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                                                            <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
+                                                            <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
                                 Prévu pour le {new Date(post.published_at).toLocaleDateString('fr-FR')}
                             </span>
                                                         </>

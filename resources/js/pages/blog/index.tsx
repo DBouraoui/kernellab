@@ -15,7 +15,6 @@ export default function BlogIndex({ posts, comingSoon, allTags }: BlogIndexProps
     const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
     const [searchQuery, setSearchQuery] = React.useState('');
 
-    // Optimisation avec useMemo
     const filteredPosts = useMemo(() => {
         return posts.filter(post => {
             const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
@@ -28,8 +27,18 @@ export default function BlogIndex({ posts, comingSoon, allTags }: BlogIndexProps
         });
     }, [posts, selectedTag, searchQuery]);
 
-    const latestPost = !selectedTag && !searchQuery ? filteredPosts[0] : null;
-    const gridPosts = !selectedTag && !searchQuery ? filteredPosts.slice(1) : filteredPosts;
+    const publishedPosts = useMemo(() => {
+        const now = new Date();
+        return filteredPosts.filter(post => {
+            const publishDate = new Date(post.published_at);
+            return publishDate <= now;
+        });
+    }, [filteredPosts]);
+
+    const latestPost = !selectedTag && !searchQuery ? publishedPosts[0] : null;
+    const gridPosts = latestPost
+        ? filteredPosts.filter(p => p.id !== latestPost.id)
+        : filteredPosts;
 
     return (
         <GuestLayout>

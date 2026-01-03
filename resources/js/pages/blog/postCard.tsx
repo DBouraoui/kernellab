@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { CalendarDays, Clock, Sparkles, Bell, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { newsletter } from '@/routes';
 
 export const PostCard = ({ post }: { post: PostInterface }) => {
     const isFuture = post.published_at ? new Date(post.published_at) > new Date() : false;
@@ -113,11 +114,8 @@ export const PostCard = ({ post }: { post: PostInterface }) => {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-col gap-3 mt-4">
-                        <Button className="w-full rounded-xl" onClick={() => window.alert('Logique newsletter ici !')}>
+                        <Button className="w-full rounded-xl" onClick={() => router.visit(newsletter())}>
                             Prévenez-moi par mail
-                        </Button>
-                        <Button variant="ghost" className="w-full rounded-xl" onClick={() => {}}>
-                            Découvrir d'autres articles
                         </Button>
                     </div>
                 </DialogContent>

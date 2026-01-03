@@ -1,11 +1,9 @@
 import {
-    Code2,
     Terminal,
     Container,
     Cloud,
-    ExternalLink, Monitor
+    Monitor
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 
 export default function TechStack() {
     const categories = [

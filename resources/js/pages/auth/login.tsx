@@ -20,12 +20,11 @@ interface LoginProps {
 export default function Login({
     status,
     canResetPassword,
-    canRegister,
 }: LoginProps) {
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title="Connexion a votre compte"
+            description="Entrez votre adresse email et votre mot de passe."
         >
             <Head title="Log in" />
 
@@ -38,7 +37,7 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Adresse email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -54,7 +53,7 @@ export default function Login({
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Mot de passe</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
@@ -83,7 +82,7 @@ export default function Login({
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember">Rester connecté ?</Label>
                             </div>
 
                             <Button
@@ -94,18 +93,18 @@ export default function Login({
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Log in
+                                Connexion
                             </Button>
                         </div>
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
+                        {/*{canRegister && (*/}
+                        {/*    <div className="text-center text-sm text-muted-foreground">*/}
+                        {/*        Don't have an account?{' '}*/}
+                        {/*        <TextLink href={register()} tabIndex={5}>*/}
+                        {/*            S'inscrire*/}
+                        {/*        </TextLink>*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                     </>
                 )}
             </Form>

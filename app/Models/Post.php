@@ -58,4 +58,13 @@ class Post extends Model
     {
         return $this->belongsTo(\App\Models\User::class);
     }
+
+    /**
+     * Scope pour ne récupérer que les articles publiés.
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published')
+            ->where('published_at', '<=', now());
+    }
 }

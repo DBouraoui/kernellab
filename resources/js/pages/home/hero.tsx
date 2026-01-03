@@ -1,5 +1,7 @@
-import { ArrowRight, Github, Linkedin, Terminal, Server, Code2, Cloud } from "lucide-react"
+import { ArrowRight, Github, Linkedin, Terminal, Server, Code2, Cloud, MessageCircle, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Link } from '@inertiajs/react';
+import { blog, contact } from '@/routes';
 
 export default function Hero() {
     return (
@@ -19,26 +21,27 @@ export default function Hero() {
                     <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1]">
                         Je bâtis des apps <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Full Stack</span>
-                        <span className="text-foreground"> & du </span>
+                        <span className="text-foreground"> et des solutions </span>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">DevOps.</span>
+
                     </h1>
 
                     <p className="mt-6 max-w-[640px] text-lg sm:text-xl text-muted-foreground leading-relaxed">
                         Développeur passionné par l'automatisation et la performance.
-                        Je crée des interfaces robustes avec <strong>React & symfony</strong> et je gère leur déploiement continu sur des infrastructures <strong>Cloud</strong> scalables.
+                        Je crée des interfaces <strong>robustes et scalables</strong> et je gère leur déploiement continu sur des infrastructures <strong>Cloud</strong> scalables.
                     </p>
 
                     <div className="mt-10 flex flex-wrap gap-4 items-center w-full">
                         <Button size="lg" className="w-full sm:w-auto gap-2 shadow-lg shadow-primary/20" asChild>
-                            <a href="/blog">
+                            <Link href={blog()} prefetch>
                                 Explorer le Blog
                                 <ArrowRight className="h-5 w-5" />
-                            </a>
+                            </Link>
                         </Button>
-                        <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-                            <a href="/projects">
-                                Projets Open Source
-                            </a>
+                        <Button  size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                            <Link href={contact()} prefetch>
+                                Contactez moi <Send />
+                            </Link>
                         </Button>
                     </div>
 
@@ -74,7 +77,7 @@ export default function Hero() {
                             </div>
                             <div>
                                 <h3 className="font-bold text-xl">Frontend Development</h3>
-                                <p className="text-sm text-muted-foreground mt-1">Interfaces haute performance avec React, Next.js et Framer Motion.</p>
+                                <p className="text-sm text-muted-foreground mt-1">Interfaces haute performance avec React, Next.js et Nuxt4.</p>
                             </div>
                         </div>
 
@@ -86,7 +89,9 @@ export default function Hero() {
                             <div>
                                 <h3 className="font-bold text-lg leading-tight">Backend & APIs</h3>
                                 <p className="text-xs text-muted-foreground mt-2 font-mono">
-                                    &gt; Node.js<br/>
+                                    &gt; PHP<br/>
+                                    &gt; GO<br/>
+                                    &gt; PYTHON<br/>
                                     &gt; PostgreSQL<br/>
                                     &gt; Redis
                                 </p>
