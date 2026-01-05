@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y nodejs npm
 
 WORKDIR /app
 
-# 3. On installe d'abord les dépendances PHP (Composer)
 # C'est CRUCIAL car le plugin Vite a besoin du dossier "vendor" pour lancer "php artisan"
 COPY composer.json composer.lock ./
 
