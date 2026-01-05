@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:latest-php8.3
+FROM dunglas/frankenphp:1.11-builder-php8.4.16-trixie
 
 # 1. Installation des extensions indispensables au runtime
 RUN install-php-extensions \
