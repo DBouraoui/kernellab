@@ -43,6 +43,7 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN echo "APP_KEY=base64:$(openssl rand -base64 32)" > .env
 
 # 6. On lance le build (Maintenant "php" existe ici, donc wayfinder va marcher !)
+RUN npm install
 RUN npm run build
 
 RUN rm .env
