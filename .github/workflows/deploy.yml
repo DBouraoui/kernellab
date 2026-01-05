@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "."
-          target: "/root/mon-app"
+          target: "~/mon-app"
 
 
       - name: Build et Deploy sur le VPS via SSH
