@@ -29,9 +29,23 @@ RUN npm ci
 # 5. On copie tout le code source
 COPY . .
 
+RUN mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/testing \
+             storage/framework/views \
+             storage/app/public \
+             bootstrap/cache
+
+# On donne les droits (très important)
+RUN chmod -R 775 storage bootstrap/cache
+
+# On génère une clé temporaire pour que Laravel ne refuse pas de démarrer
+RUN echo "APP_KEY=base64:$(openssl rand -base64 32)" > .env
+
 # 6. On lance le build (Maintenant "php" existe ici, donc wayfinder va marcher !)
 RUN npm run build
 
+RUN rm .env
 # -----------------------------------------------------------------------------
 # Étape 2 : Image Finale de Production (Propre et légère)
 # -----------------------------------------------------------------------------
