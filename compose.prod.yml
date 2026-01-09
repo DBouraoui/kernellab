@@ -2,7 +2,7 @@ services:
   app:
     image: dbouraoui/kernallab:latest
     environment:
-      - APP_KEY=${APP_KEY}
+      - APP_KEY=base64:2qpevAdFCtczVothM8wE1zZ1Dyu/gFWgWtnukZShw90=
       - APP_URL=${APP_URL}
       - APP_DEBUG=true
     networks:
