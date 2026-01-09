@@ -1,0 +1,13 @@
+:80 {
+    root * /app/public
+
+    encode gzip
+    file_server
+
+    # On passe les requêtes PHP à notre container "app" sur le port 9000
+    php_fastcgi app:9000
+
+    header {
+        Access-Control-Allow-Origin *
+    }
+}

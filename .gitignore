@@ -7,6 +7,5 @@ storage/*.key
 .env.*
 tests
 
-**/caddy
 frankenphp
 frankenphp-worker.php
