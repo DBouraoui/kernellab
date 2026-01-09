@@ -31,4 +31,4 @@ jobs:
           script: |
             cd ~/mon-app
             # On déploie la stack
-            docker stack deploy -c compose.prod.yml monapp --with-registry-auth
+            docker stack deploy -c compose.prod.yml kernellab --with-registry-auth
