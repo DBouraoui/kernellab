@@ -1,68 +1,53 @@
-# -----------------------------------------------------------------------------
-# Étape 1 : Builder (Contient PHP + Node pour compiler les assets)
-# -----------------------------------------------------------------------------
-FROM dunglas/frankenphp:latest AS builder
+FROM php:8.4-fpm
 
-# 1. On installe les extensions PHP (nécessaires pour "php artisan")
-RUN install-php-extensions \
-    pdo_mysql \
-    intl \
+# 1. Installation des dépendances système (Ajout de libicu-dev pour intl)
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libicu-dev \
     zip \
-    opcache \
-    gd \
-    bcmath \
-    pcntl
+    unzip \
+    git \
+    curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 2. On installe Node.js et NPM dans cette image PHP
-# (FrankenPHP est souvent basé sur Debian ou Alpine, cette commande marche pour Debian/Ubuntu qui est le défaut)
-RUN apt-get update && apt-get install -y nodejs npm
+# 2. Configuration et installation des extensions PHP
+# On configure GD puis on installe tout d'un coup
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install \
+    pdo_mysql \
+    gd \
+    zip \
+    bcmath \
+    pcntl \
+    intl
+
+# 3. Installation de Composer et Node.js
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
 WORKDIR /app
 
-# 3. On installe d'abord les dépendances PHP (Composer)
-# C'est CRUCIAL car le plugin Vite a besoin du dossier "vendor" pour lancer "php artisan"
-COPY composer.json composer.lock ./
+# 4. Copie des fichiers de dépendances (pour optimiser le cache Docker)
+COPY composer.json composer.lock package.json package-lock.json ./
 
-# 4. On installe les dépendances JS (NPM)
-COPY package.json package-lock.json ./
+# 5. Installation des dépendances PHP et JS
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 RUN npm ci
 
-# 5. On copie tout le code source
+# 6. Copie du reste du code source
 COPY . .
 
-# 6. On lance le build (Maintenant "php" existe ici, donc wayfinder va marcher !)
+# 7. Génération de l'autoloader et Build des assets Inertia/Vite
+RUN composer dump-autoload --optimize --no-dev
 RUN npm run build
 
-# -----------------------------------------------------------------------------
-# Étape 2 : Image Finale de Production (Propre et légère)
-# -----------------------------------------------------------------------------
-FROM dunglas/frankenphp
+# 8. Nettoyage des fichiers inutiles pour alléger l'image
+RUN rm -rf node_modules
 
-# Installation des extensions pour le runtime
-RUN install-php-extensions \
-    pdo_mysql \
-    intl \
-    zip \
-    opcache \
-    gd \
-    bcmath \
-    pcntl
-
-ENV SERVER_NAME=:80
-
-# Configuration PHP Prod
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-WORKDIR /app
-
-# On copie le code source
-COPY . /app
-
-# On écrase le dossier vendor avec celui généré proprement dans le builder
-COPY --from=builder /app/vendor /app/vendor
-
-# On récupère les assets compilés (JS/CSS/Manifest) du builder
-COPY --from=builder /app/public/build /app/public/build
-
-# Permissions finales
+# 9. Gestion des permissions (Crucial pour Laravel)
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

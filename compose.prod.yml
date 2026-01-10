@@ -1,25 +1,40 @@
 services:
   app:
-    container_name: kernallab
-    image: ghcr.io/${GITHUB_NAME}/${REPO_NAME}:latest
-    ports:
-      - "80:80"
+    image: dbouraoui/kernallab:latest
+    environment:
+      - APP_KEY=base64:2qpevAdFCtczVothM8wE1zZ1Dyu/gFWgWtnukZShw90=
+      - APP_URL=${APP_URL}
+      - APP_DEBUG=true
+    networks:
+      - internal
+      - public
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+      - /home/ubuntu/mon-app/.env:/app/.env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  caddy:
+    image: caddy:alpine
+    networks:
+      - public
+      - internal
+    volumes:
+      - ./caddy/prod/Caddyfile:/etc/caddy/Caddyfile
+      - ./:/app
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.monapp.rule=Host(`myrocket.fr`)"
-        - "traefik.http.routers.monapp.entrypoints=websecure"
-        - "traefik.http.routers.monapp.tls.certresolver=myresolver"
-        - "traefik.http.services.monapp.loadbalancer.server.port=80"
-      mode: replicated
-      replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
+        - "traefik.http.routers.kernellab.rule=Host(`myrocket.fr`) || Host(`www.myrocket.fr`)"
+        - "traefik.http.routers.kernellab.entrypoints=websecure"
+        - "traefik.http.routers.kernellab.tls.certresolver=myresolver"
+        - "traefik.http.services.kernellab.loadbalancer.server.port=80"
+      replicas: 1
 
-volumes:
-  caddy_data:
-  caddy_config:
+networks:
+  public:
+    external: true
+  internal:
+    driver: overlay
+    attachable: true
