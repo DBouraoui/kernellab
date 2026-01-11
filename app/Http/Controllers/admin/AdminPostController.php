@@ -12,6 +12,8 @@ use Inertia\Inertia;
 
 class AdminPostController extends Controller
 {
+    protected $disk = 's3';
+
     public function list()
     {
         $posts = Post::orderBy('created_at', 'desc')->get();
@@ -35,21 +37,31 @@ class AdminPostController extends Controller
     {
         $post = Post::findOrFail($id);
 
+        // 1. Suppression des images multiples (le tableau)
         if (!empty($post->image) && is_array($post->image)) {
             foreach ($post->image as $url) {
-                $path = Str::after($url, '/storage/');
+                $path = $this->extractPathFromUrl($url);
 
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
+                if (Storage::disk('s3')->exists($path)) {
+                    Storage::disk('s3')->delete($path);
                 }
             }
         }
 
+        // 2. Suppression de la Thumbnail (si tu as un champ 'thumbnail' dans ta table)
+        if (!empty($post->thumbnail)) {
+            $thumbPath = $this->extractPathFromUrl($post->thumbnail);
+            if (Storage::disk('s3')->exists($thumbPath)) {
+                Storage::disk('s3')->delete($thumbPath);
+            }
+        }
+
+        // 3. Suppression de l'entrée en base de données
         $post->delete();
 
         return redirect()
             ->route('admin.post.list')
-            ->with('success', 'Article supprimé avec succès');
+            ->with('success', 'Article et images supprimés d\'OVH avec succès');
     }
 
     /**
@@ -122,10 +134,10 @@ class AdminPostController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                // On stocke dans storage/app/public/posts
-                $path = $image->store('posts', 'public');
-                // On génère l'URL publique
-                $urls[] = Storage::url($path);
+                // On stocke sur S3. Le 3ème paramètre 'public' assure la visibilité
+                $path = $image->store('posts', $this->disk);
+                // On génère l'URL (qui sera https://votre-bucket.s3.gra.io...)
+                $urls[] = Storage::disk($this->disk)->url($path);
             }
         }
 
@@ -135,14 +147,16 @@ class AdminPostController extends Controller
     public function deleteImage(Request $request)
     {
         $url = $request->url;
-        $path = Str::after($url, '/storage/');
+        // Sur S3, le chemin est ce qui vient APRÈS l'URL de base du bucket
+        // On récupère le chemin relatif (ex: posts/image.jpg)
+        $path = $this->extractPathFromUrl($url);
 
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-            return response()->json(['message' => 'Fichier supprimé']);
+        if (Storage::disk($this->disk)->exists($path)) {
+            Storage::disk($this->disk)->delete($path);
+            return response()->json(['message' => 'Fichier supprimé d\'OVH']);
         }
 
-        return response()->json(['message' => 'Fichier introuvable'], 404);
+        return response()->json(['message' => 'Fichier introuvable sur S3'], 404);
     }
 
     public function uploadThumbnail(Request $request)
@@ -152,9 +166,8 @@ class AdminPostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // On stocke dans un dossier spécifique pour les couvertures
-            $path = $request->file('image')->store('posts/thumbnails', 'public');
-            $url = Storage::url($path);
+            $path = $request->file('image')->store('posts/thumbnails', $this->disk);
+            $url = Storage::disk($this->disk)->url($path);
 
             return response()->json(['url' => $url]);
         }
@@ -165,14 +178,32 @@ class AdminPostController extends Controller
     public function deleteThumbnail(Request $request)
     {
         $url = $request->url;
+        $path = $this->extractPathFromUrl($url);
 
-        $path = Str::after($url, '/storage/');
-
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-            return response()->json(['message' => 'Thumbnail supprimé du serveur']);
+        if (Storage::disk($this->disk)->exists($path)) {
+            Storage::disk($this->disk)->delete($path);
+            return response()->json(['message' => 'Thumbnail supprimé d\'OVH']);
         }
 
         return response()->json(['message' => 'Fichier introuvable'], 404);
+    }
+
+    /**
+     * Petite fonction helper pour extraire le chemin relatif
+     */
+    private function extractPathFromUrl($url)
+    {
+        // 1. On récupère uniquement la partie "chemin" de l'URL (ex: /ton-bucket/posts/image.jpg)
+        $path = parse_url($url, PHP_URL_PATH);
+
+        // 2. On retire le nom du bucket s'il est présent dans le chemin (cas du Path Style d'OVH)
+        $bucketName = config('filesystems.disks.s3.bucket');
+        if (Str::contains($path, $bucketName)) {
+            $path = Str::after($path, $bucketName);
+        }
+
+        // 3. TRÈS IMPORTANT : On retire le slash au début.
+        // S3 veut "posts/image.jpg" et NON "/posts/image.jpg"
+        return ltrim($path, '/');
     }
 }
