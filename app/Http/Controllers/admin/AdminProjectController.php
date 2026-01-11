@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AdminProjectController extends Controller
 {
+
+    protected $disk = 's3';
+
     /**
      * Display a listing of the resource.
      */
@@ -33,39 +37,36 @@ class AdminProjectController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation stricte
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'required|in:devops,cloud,web,mobile,opensource,saas',
             'status' => 'required|in:draft,published,archived',
             'description_short' => 'nullable|string|max:500',
-            'content' => 'nullable|string', // Le Markdown
-            'stack' => 'nullable|string', // On reçoit "React, Laravel, AWS"
+            'content' => 'nullable|string',
+            'stack' => 'nullable|string',
             'github_url' => 'nullable|url',
             'live_url' => 'nullable|url',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072', // Max 3MB
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
             'is_featured' => 'boolean',
         ]);
 
-        // 2. Gestion de l'upload d'image
+        // Gestion de l'upload vers S3
         if ($request->hasFile('thumbnail')) {
-            // Stocke dans storage/app/public/projects
-            $path = $request->file('thumbnail')->store('projects', 'public');
-            $validated['thumbnail_url'] = '/storage/' . $path;
+            // On stocke sur OVH (dossier projects)
+            $path = $request->file('thumbnail')->store('projects', $this->disk);
+            // On enregistre l'URL complète du bucket (https://...)
+            $validated['thumbnail_url'] = Storage::disk($this->disk)->url($path);
         }
 
-        // 3. Transformation de la Stack (String -> Array)
         if (!empty($validated['stack'])) {
-            // "React,  Vue " -> ["React", "Vue"]
             $validated['stack'] = array_filter(array_map('trim', explode(',', $validated['stack'])));
         } else {
             $validated['stack'] = [];
         }
 
-        // 4. Création (Le Slug est géré par le Model boot())
         Project::create($validated);
 
-        return redirect()->route('admin.project.index')->with('success', 'Projet créé avec succès !');
+        return redirect()->route('admin.project.index')->with('success', 'Projet créé avec succès sur OVH !');
     }
 
     /**
@@ -106,58 +107,68 @@ class AdminProjectController extends Controller
             'status' => 'required|in:draft,published,archived',
             'description_short' => 'nullable|string|max:500',
             'content' => 'nullable|string',
-            'stack' => 'nullable|string', // Reçu en string depuis le front
+            'stack' => 'nullable|string',
             'github_url' => 'nullable|url',
             'live_url' => 'nullable|url',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
             'is_featured' => 'boolean',
         ]);
 
-        // 1. Gestion de l'image
         if ($request->hasFile('thumbnail')) {
-            // Supprimer l'ancienne image si elle existe
+            // 1. Supprimer l'ancienne image du bucket
             if ($project->thumbnail_url) {
-                $oldPath = str_replace('/storage/', '', $project->thumbnail_url);
-                Storage::disk('public')->delete($oldPath);
+                $oldPath = $this->extractPathFromUrl($project->thumbnail_url);
+                if (Storage::disk($this->disk)->exists($oldPath)) {
+                    Storage::disk($this->disk)->delete($oldPath);
+                }
             }
 
-            $path = $request->file('thumbnail')->store('projects', 'public');
-            $validated['thumbnail_url'] = '/storage/' . $path;
+            // 2. Upload la nouvelle vers S3
+            $path = $request->file('thumbnail')->store('projects', $this->disk);
+            $validated['thumbnail_url'] = Storage::disk($this->disk)->url($path);
         }
 
-        // 2. Transformation de la Stack (String -> Array)
         if (!empty($validated['stack'])) {
             $validated['stack'] = array_filter(array_map('trim', explode(',', $validated['stack'])));
         } else {
             $validated['stack'] = [];
         }
 
-        // 3. Update
         $project->update($validated);
 
         return redirect()->route('admin.project.index')->with('success', 'Projet mis à jour !');
     }
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(int $id)
     {
         $project = Project::findOrFail($id);
 
-        // On vérifie si le projet a une image et si elle existe sur le disque
+        // Nettoyage de l'image sur S3
         if ($project->thumbnail_url) {
-            // On transforme l'URL publique (/storage/projects/...) en chemin relatif (projects/...)
-            $path = str_replace('/storage/', '', $project->thumbnail_url);
-
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            $path = $this->extractPathFromUrl($project->thumbnail_url);
+            if (Storage::disk($this->disk)->exists($path)) {
+                Storage::disk($this->disk)->delete($path);
             }
         }
 
         $project->delete();
 
-        // Comme tu n'utilises pas le helper route(), on redirige vers l'URL en dur
-        return redirect('/dashboard/projects');
+        return redirect('/dashboard/projects')->with('success', 'Projet et image supprimés de S3');
+    }
+
+    /**
+     * Helper pour extraire le chemin relatif de l'URL S3
+     */
+    private function extractPathFromUrl($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        $bucketName = config('filesystems.disks.s3.bucket');
+
+        if (Str::contains($path, $bucketName)) {
+            $path = Str::after($path, $bucketName);
+        }
+
+        return ltrim($path, '/');
     }
 
     public function toggleFeatured(int $id)
