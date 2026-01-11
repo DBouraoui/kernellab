@@ -36,7 +36,7 @@ WORKDIR /app
 COPY composer.json composer.lock package.json package-lock.json ./
 
 # 5. Installation des dépendances PHP et JS
-RUN composer install
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 RUN npm ci
 
 # 6. Copie du reste du code source
