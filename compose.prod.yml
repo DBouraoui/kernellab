@@ -1,19 +1,25 @@
 services:
   app:
     image: dbouraoui/kernallab:latest
-    environment:
-      - APP_KEY=base64:2qpevAdFCtczVothM8wE1zZ1Dyu/gFWgWtnukZShw90=
-      - APP_URL=${APP_URL}
-      - APP_DEBUG=true
     networks:
       - internal
       - public
     volumes:
-      - /home/ubuntu/mon-app/.env:/app/.env
+      - /home/ubuntu/mon-app/.env:/var/www/html/.env
+      - public_web:/var/www/html/public
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
+        reservations:
+          cpus: "0.5"
+          memory: 512M
 
   caddy:
     image: caddy:alpine
@@ -22,7 +28,7 @@ services:
       - internal
     volumes:
       - ./caddy/prod/Caddyfile:/etc/caddy/Caddyfile
-      - ./:/app
+      - public_web:/var/www/html/public
     deploy:
       labels:
         - "traefik.enable=true"
@@ -31,6 +37,9 @@ services:
         - "traefik.http.routers.kernellab.tls.certresolver=myresolver"
         - "traefik.http.services.kernellab.loadbalancer.server.port=80"
       replicas: 1
+
+volumes:
+  public_web:
 
 networks:
   public:

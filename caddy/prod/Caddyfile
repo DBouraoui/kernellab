@@ -1,12 +1,13 @@
 :80 {
-    root * /app/public
+    root * /var/www/html/public
     file_server
-    php_fastcgi app:9000
+
+    encode zstd gzip
+
+    php_fastcgi kernellab_app:9000
 
     # Sécurité basique
     header {
         X-Content-Type-Options nosniff
-        X-Frame-Options DENY
-        Referrer-Policy no-referrer-when-downgrade
     }
 }
