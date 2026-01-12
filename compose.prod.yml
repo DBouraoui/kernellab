@@ -5,8 +5,8 @@ services:
       - internal
       - public
     volumes:
-      - /home/ubuntu/mon-app/.env:/app/.env
-      - assets_data:/app/public/build
+      - /home/ubuntu/mon-app/.env:/var/www/html/.env
+      - public_web:/var/www/html/public
     deploy:
       replicas: 1
       restart_policy:
@@ -28,7 +28,7 @@ services:
       - internal
     volumes:
       - ./caddy/prod/Caddyfile:/etc/caddy/Caddyfile
-      - assets_data:/var/www/html/public/build
+      - public_web:/var/www/html/public
     deploy:
       labels:
         - "traefik.enable=true"
@@ -39,7 +39,7 @@ services:
       replicas: 1
 
 volumes:
-  assets_data:
+  public_web:
 
 networks:
   public:
