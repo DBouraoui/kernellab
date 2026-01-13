@@ -1,11 +1,18 @@
 import React, { useState, useRef } from 'react';
 import { Head } from '@inertiajs/react';
-import GuestLayout from '@/layouts/guest-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UploadCloud, ArrowRight, Download, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import AppLayout from '@/layouts/app-layout';
+import type { BreadcrumbItem } from '@/types';
+import admin from '@/routes/admin';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: admin.dashboard().url },
+    { title: 'Image optimiser', href: admin.pictures.index().url },
+];
 
 export default function Converter() {
     const [targetWidth, setTargetWidth] = useState<string>("1920");
@@ -107,7 +114,7 @@ export default function Converter() {
     };
 
     return (
-        <GuestLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Convertisseur JPG/PNG vers WebP" />
 
             <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -246,6 +253,6 @@ export default function Converter() {
                     ))}
                 </div>
             </div>
-        </GuestLayout>
+        </AppLayout>
     );
 }
