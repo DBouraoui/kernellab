@@ -2,14 +2,14 @@ FROM php:8.4-fpm
 
 # 1. Installation des dépendances système + Node.js
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libicu-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libicu-dev libwebp-dev \
     zip unzip git curl \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Extensions PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo_mysql gd zip bcmath pcntl intl
 
 # 3. Composer
