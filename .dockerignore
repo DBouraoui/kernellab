@@ -4,3 +4,4 @@
 /storage/*.key
 .env
 .git
+/public/hot
