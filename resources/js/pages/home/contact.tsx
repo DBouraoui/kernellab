@@ -1,5 +1,4 @@
 import { Mail, Github, Linkedin, MessageSquare } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import ContactForm from '@/pages/contact/contact-form';
 
 export function Contact() {
