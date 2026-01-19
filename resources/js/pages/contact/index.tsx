@@ -31,7 +31,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold uppercase text-muted-foreground">Email</p>
-                                        <p className="font-medium">contact@dbouraoui.fr</p>
+                                        <p className="font-medium">contact@kernellab.fr</p>
                                     </div>
                                 </div>
 

@@ -1,5 +1,4 @@
 import { Mail, Github, Linkedin, MessageSquare } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import ContactForm from '@/pages/contact/contact-form';
 
 export function Contact() {
@@ -22,7 +21,7 @@ export function Contact() {
                                 <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 transition-colors">
                                     <Mail className="h-4 w-4 text-primary" />
                                 </div>
-                                <span className="font-medium">contact@ton-domaine.dev</span>
+                                <span className="font-medium">contact@kernellab.fr</span>
                             </div>
                             <div className="flex items-center gap-3 text-sm group">
                                 <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 transition-colors">
