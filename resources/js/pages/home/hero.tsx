@@ -109,7 +109,7 @@ export default function Hero() {
                                     <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Infrastructure</span>
                                 </div>
                                 <h3 className="font-bold text-lg">DevOps & Cloud</h3>
-                                <p className="text-sm text-muted-foreground">CI/CD, Kubernetes et Terraform.</p>
+                                <p className="text-sm text-muted-foreground">CI/CD, Kubernetes, Swarm et Terraform.</p>
                             </div>
                         </div>
 
